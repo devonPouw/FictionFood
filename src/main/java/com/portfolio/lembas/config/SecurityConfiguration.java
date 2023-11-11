@@ -1,5 +1,6 @@
 package com.portfolio.lembas.config;
 
+import com.portfolio.lembas.authentication.token.TokenAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

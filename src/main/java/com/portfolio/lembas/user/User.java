@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -18,7 +19,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ")
