@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static com.portfolio.lembas.user.UserType.*;
+import static com.portfolio.lembas.user.UserRole.*;
 
 @Configuration
 @EnableWebSecurity

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
-public enum UserType {
+public enum UserRole {
 
 
     MODERATOR(Collections.emptySet()),
