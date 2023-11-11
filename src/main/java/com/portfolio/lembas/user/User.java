@@ -1,11 +1,11 @@
 package com.portfolio.lembas.user;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
+@Jacksonized
 @Getter
 @Setter
 @RequiredArgsConstructor
@@ -19,5 +19,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ")
     private Long id;
 
+    @NonNull
+    @JsonView({UserViews.viewMe.class})
+    @Column(unique = true)
+    private String username;
+
+    @NonNull
+    private String password;
+
+    @NonNull
+    @JsonView({UserViews.viewMe.class})
+    private String nickname;
 
 }
