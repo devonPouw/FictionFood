@@ -19,6 +19,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "USERS", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"nickname", "username"})
+})
 public class User implements UserDetails {
 
     @Id
@@ -35,6 +38,7 @@ public class User implements UserDetails {
 
     @NonNull
     @JsonView({UserViews.viewMe.class})
+    @Column(unique = true)
     private String nickname;
 
     @NonNull
