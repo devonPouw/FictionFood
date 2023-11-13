@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import lembasLogo from '/images/lembas-logo-2.png'
 
 import { ModeToggle } from '../darkmode/dark-mode'
 import Link from 'next/link'
@@ -9,11 +8,7 @@ export default function Header() {
     <div className='sticky flex w-full justify-between border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:w-screen lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30'>
         <div className='container flex h-20 items-center'>
         <Link href="/">
-        <Image className='cursor-pointer' src={lembasLogo}
-         width={200} 
-         height={128}
-         alt='Lembas logo'
-          />
+          <span className='font-bold'>FictionFood</span>
           </Link>
         </div>
         <div className='flex flex-1 items-center justify-between space-x-2 md:justify-end'>
