@@ -46,7 +46,7 @@ public class Recipe {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
     @JsonManagedReference
-    private Set<RecipeIngredient> recipeIngredients = new HashSet<>();
+    private Set<RecipeIngredient> recipeIngredients;
 
 
     public void addRecipeIngredient(RecipeIngredient recipeIngredient) {
