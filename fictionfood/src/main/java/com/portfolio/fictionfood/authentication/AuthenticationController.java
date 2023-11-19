@@ -14,11 +14,6 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
 
-    @GetMapping("/test")
-    public ResponseEntity<String> test_endpoint() {
-        return ResponseEntity.ok("Hello world");
-    }
-
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest loginRequest) {
         var auth = authenticationManager.authenticate(
