@@ -1,8 +1,8 @@
 package com.portfolio.fictionfood.recipeingredient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.recipes.recipeapp.ingredient.Ingredient;
-import com.recipes.recipeapp.recipe.Recipe;
+import com.portfolio.fictionfood.ingredient.Ingredient;
+import com.portfolio.fictionfood.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
