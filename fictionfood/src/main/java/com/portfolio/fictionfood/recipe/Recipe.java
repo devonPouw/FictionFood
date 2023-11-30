@@ -3,11 +3,13 @@ package com.portfolio.fictionfood.recipe;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
+import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +43,18 @@ public class Recipe {
     private BigDecimal rating;
 
     private Long amountOfReviews;
+
+    @NonNull
+    @JsonView({RecipeViews.GetRecipeList.class})
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    @JsonManagedReference
+    private User author;
+
+    @NonNull
+    @JsonView({RecipeViews.GetRecipeList.class})
+    @Column(columnDefinition = "TIMESTAMP(0)")
+    private LocalDateTime datePublished;
 
     //Category
 
