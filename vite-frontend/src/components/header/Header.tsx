@@ -1,11 +1,11 @@
-import { ModeToggle } from '../darkmode/dark-mode'
-import Link from 'next/link'
+import { ModeToggle } from '@/components/mode-toggle'
+import { Link } from 'react-router-dom'
 
 export default function Header() {
   return (
     <div className='sticky flex w-full justify-between border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:w-screen lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30'>
         <div className='container flex h-14 items-center'>
-        <Link href="/">
+        <Link to={"/"}>
           <span className='font-bold'><span className='font-serif font-semibold'>F</span>iction<span className='font-serif font-semibold'>f</span>ood</span>
           </Link>
         </div>
