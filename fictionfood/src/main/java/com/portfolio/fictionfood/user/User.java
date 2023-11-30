@@ -1,6 +1,8 @@
 package com.portfolio.fictionfood.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.portfolio.fictionfood.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
@@ -10,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 
 @Jacksonized
 @Getter
@@ -34,7 +37,9 @@ public class User implements UserDetails {
     private String username;
 
     @NonNull
-    private String password;
+    @JsonView({UserViews.viewMe.class})
+    @Column(unique = true)
+    private String email;
 
     @NonNull
     @JsonView({UserViews.viewMe.class})
@@ -42,11 +47,16 @@ public class User implements UserDetails {
     private String nickname;
 
     @NonNull
+    private String password;
+
+    @NonNull
     @JsonView(UserViews.viewMe.class)
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-
+    @JsonBackReference
+    @OneToMany(mappedBy = "author")
+    private Set<Recipe> recipes;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

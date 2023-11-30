@@ -11,21 +11,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.NoSuchElementException;
 
-    @RequiredArgsConstructor
-    @RestController
-    @RequestMapping("api/v1/users")
-    public class UserController {
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("api/v1/users")
+public class UserController {
 
-        private final UserRepository userRepository;
-        private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-        @JsonView(UserViews.viewMe.class)
-        @GetMapping("/me")
-        public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal User currentUser) {
-            try {
-                return ResponseEntity.ok(currentUser);
-            } catch (NoSuchElementException e) {
-                return ResponseEntity.notFound().build();
-            }
+    @JsonView(UserViews.viewMe.class)
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser(@AuthenticationPrincipal User currentUser) {
+        try {
+            return ResponseEntity.ok(currentUser);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
         }
     }
+}

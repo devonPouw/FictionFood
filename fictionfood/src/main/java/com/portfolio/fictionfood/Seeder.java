@@ -31,9 +31,9 @@ public class Seeder implements CommandLineRunner {
                         .role(UserRole.MODERATOR)
                         .nickname("GordonRamsay")
                         .username("mod")
+                        .email("ramsay@example.com")
                         .password("123")
                         .build()
-
         ));
     }
 }
