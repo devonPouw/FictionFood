@@ -14,14 +14,13 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@NoArgsConstructor
 public class RecipeIngredient {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private double quantity;
+    private Double quantity;
 
     @ManyToOne
     @JoinColumn(nullable = false)
