@@ -27,6 +27,7 @@ public class Recipe {
     @Id
     private Long id;
 
+    @NonNull
     @JsonView({RecipeViews.GetRecipeList.class})
     private String title;
 
@@ -51,12 +52,16 @@ public class Recipe {
     @JsonManagedReference
     private User author;
 
+    private Boolean published;
+
+    @JsonView({RecipeViews.GetRecipeList.class})
+    private Set<String> category;
+
     @NonNull
     @JsonView({RecipeViews.GetRecipeList.class})
     @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime datePublished;
 
-    //Category
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
     @JsonManagedReference
