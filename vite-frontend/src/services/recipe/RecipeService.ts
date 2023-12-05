@@ -2,25 +2,25 @@ import http from "@/http-common"
 import IRecipeData from "@/types/Recipe"
 
 const getAll = () => {
-    return http.get<Array<IRecipeData>>("/api/v1/recipes")
+    return http.get<Array<IRecipeData>>("/recipes")
 }
 const get = (id: number) => {
-    return http.get<IRecipeData>(`/api/v1/recipes/${id}`);
+    return http.get<IRecipeData>(`/recipes/${id}`);
   };
   
   const create = (data: IRecipeData) => {
-    return http.post<IRecipeData>("/api/v1/recipes", data);
+    return http.post<IRecipeData>("/recipes", data);
   };
   
   const update = (id: number, data: IRecipeData) => {
-    return http.put<any>(`/api/v1/recipes/${id}`, data);
+    return http.put<any>(`/recipes/${id}`, data);
   };
   
   const remove = (id: number) => {
-    return http.delete<any>(`/api/v1/recipes/${id}`);
+    return http.delete<any>(`/recipes/${id}`);
   };
   const findByTitle = (title: string) => {
-    return http.get<Array<IRecipeData>>(`/api/v1/recipes?title=${title}`);
+    return http.get<Array<IRecipeData>>(`/recipes?title=${title}`);
   };
 
   const RecipeDataService = {
