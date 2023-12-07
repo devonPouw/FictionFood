@@ -67,7 +67,8 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests((auth) -> {
-            matchAll.apply(auth).apply("/auth/**").permitAll();
+            matchAll.apply(auth).apply("/api/auth/**").permitAll();
+
             auth.anyRequest().authenticated();
         });
         http.addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

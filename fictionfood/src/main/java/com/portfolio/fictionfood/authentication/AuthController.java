@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
@@ -44,26 +44,26 @@ public class AuthController {
         if (userRepository.existsByEmail(registerRequest.email)) {
             return new ResponseEntity<>("Email is already taken!", HttpStatus.BAD_REQUEST);
         }
-        User user = new User();
-        user.setNickname(registerRequest.nickname);
-        user.setUsername(registerRequest.username);
-        user.setEmail(registerRequest.email);
-        if (registerRequest.password.equals(registerRequest.matchingPassword))
-            user.setPassword(passwordEncoder.encode(registerRequest.password));
-        else
-            return new ResponseEntity<>("Passwords do not match!", HttpStatus.BAD_REQUEST);
-        user.setRole(UserRole.CHEF);
+        try {
+            var user = User.builder()
+                    .nickname(registerRequest.nickname)
+                    .username(registerRequest.username)
+                    .email(registerRequest.email)
+                    .password(passwordEncoder.encode(registerRequest.password))
+                    .role(UserRole.CHEF)
+                    .build();
 
-        userRepository.save(user);
-
+            userRepository.save(user);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
     }
 
     public record LoginRequest(String username, String password) {
     }
 
-    public record RegisterRequest(String nickname, String username, String email, String password,
-                                  String matchingPassword) {
+    public record RegisterRequest(String nickname, String username, String email, String password) {
     }
 
     public record AuthResponse(String accessToken) {

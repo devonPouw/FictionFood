@@ -5,8 +5,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class TokenProvider {
     public static final String TOKEN_TYPE = "JWT";
     public static final String TOKEN_ISSUER = "fictionfood";
-    public static final String TOKEN_AUDIENCE = "fictionfood-frontend";
+    public static final String TOKEN_AUDIENCE = "vite-frontend";
     @Value("${app.jwt.secret}")
     private String jwtSecret;
     @Value("${app.jwt.expiration.minutes}")
