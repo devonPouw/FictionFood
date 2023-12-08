@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/recipes")
+@RequestMapping("/api/recipes")
 public class RecipeController {
 
     @Value("${app.recipe-rules.max-per-month}")
