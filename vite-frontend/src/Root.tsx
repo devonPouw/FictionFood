@@ -1,9 +1,7 @@
-
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from "./components/header/Header"
 import {
   createBrowserRouter,
-  Link,
   Navigate,
   Outlet,
   Route,
@@ -11,14 +9,15 @@ import {
   Routes,
 } from "react-router-dom";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import Login from "./pages/LoginPage";
 import { useContext } from "react";
-import { AuthContext } from "./misc/AuthContext";
+import { AuthContext } from "./services/auth/auth-context";
 import AddRecipe from "./components/recipe/AddRecipe";
+import Register from "./pages/RegisterPage";
+import Profile from "./components/auth/Profile";
+import Footer from "./components/footer/Footer";
 
-type Props = {}
-
-const PrivateRroutes = () => {
+const PrivateRoute = () => {
   const {authenticated} = useContext(AuthContext)
 
   if(!authenticated) return <Navigate to='/home' replace />
@@ -30,7 +29,7 @@ const router = createBrowserRouter([
   { path: "*", Component: Root },
 ]);
 
- const App = (props: Props) => {
+ const App = () => {
   return <RouterProvider router={router} />;
 }
 function Root() {
@@ -40,10 +39,13 @@ function Root() {
        <Header />
     <Routes>
     <Route path="/login" element={<Login />} />
-    <Route element={<PrivateRroutes />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/profile" element={<Profile />} />
+    <Route element={<PrivateRoute />} />
     <Route path="/" element={<Home />} />
     <Route path="recipes/new" element={<AddRecipe />} />
   </Routes>
+  <Footer />
   </ThemeProvider>
 );
 }
