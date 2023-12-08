@@ -1,4 +1,4 @@
-import RecipeDataService from "@/services/RecipeService";
+import RecipeDataService from "@/services/recipe/RecipeService";
 import IRecipeData from "@/types/Recipe";
 import { ChangeEvent, useState } from "react";
 

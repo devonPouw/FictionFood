@@ -1,7 +1,6 @@
-export default interface IUserData {
-    id: number;
+export default interface IUser {
     nickname: string;
+    username: string;
     email: string;
-    role: string;
-    accessToken: string;
+    password: string,
 }

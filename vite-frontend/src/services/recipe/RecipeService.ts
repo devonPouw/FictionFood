@@ -13,7 +13,7 @@ const get = (id: number) => {
   };
   
   const update = (id: number, data: IRecipeData) => {
-    return http.put<any>(`/recipes/${id}`, data);
+    return http.patch<any>(`/recipes/${id}`, data);
   };
   
   const remove = (id: number) => {
