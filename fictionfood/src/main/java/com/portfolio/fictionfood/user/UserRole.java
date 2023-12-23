@@ -14,10 +14,8 @@ import java.util.stream.Collectors;
 @Getter
 public enum UserRole {
 
-
     MODERATOR(Collections.emptySet()),
     CHEF(Collections.emptySet());
-
 
     private final Set<Authority> permissions;
 
