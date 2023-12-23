@@ -32,7 +32,7 @@ public class Seeder implements CommandLineRunner {
                         .nickname("GordonRamsay")
                         .username("mod")
                         .email("ramsay@example.com")
-                        .password("123")
+                        .password(passwordEncoder.encode("123"))
                         .build()
         ));
     }
