@@ -1,31 +1,50 @@
 import http from '@/http-common';
 
-export const register = (nickname: string, username: string, email: string, password: string) => {
-    return http.post("/auth/register", {
+export const register = async (role: string, nickname: string, username: string, email: string, password: string) => {
+    try{
+  const response = await http.post("/auth/register", {
+      role,
       nickname,
       username,
       email,
       password,
     });
-  };
-  export const login = async (username: string, password: string) => {
-    const response = await http.post("/auth/login", {
-      username,
-      password,
-    });
-    if (response.data.accessToken) {
-      localStorage.setItem("user", JSON.stringify(response.data));
-    }
-    return response.data;
-  };
-  
-  export const logout = () => {
-    localStorage.removeItem("user");
-  };
-  
-  export const getCurrentUser = () => {
-    const userStr = localStorage.getItem("user");
-    if (userStr) return JSON.parse(userStr);
 
-    return null;
+    return response.data;
+  } catch (error) {
+    console.error("Register failed:", error);
+      throw error;
+  }
   };
+
+  export const login = async (username: string, password: string) => {
+    try {
+      const response = await http.post("/auth/login", {
+        username,
+        password,
+      });
+  
+      return response.data;
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw error;
+    }
+  };
+  
+  export const logout = async () => {
+    try {
+      await http.post("/auth/logout");
+      sessionStorage.removeItem("token");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Handle error as needed
+    }
+  };
+
+  export function parseJwt(token:string | null) {
+    if(!token)
+    return;
+    const base64Url = token.split(".")[1];
+  const base64 = base64Url.replace("-", "+").replace("_", "/");
+  return JSON.parse(window.atob(base64));
+}

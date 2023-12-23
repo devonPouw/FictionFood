@@ -1,17 +1,18 @@
-import { getCurrentUser } from "@/services/auth/auth.service";
+import Footer from "../footer/Footer";
+import NavBar from "../header/NavBar";
 
 const Profile: React.FC = () => {
-  const currentUser = getCurrentUser();
 
-  console.log(currentUser)
   return (
+    <div>
+      <NavBar />
     <div className="container">
       <header className="jumbotron">
         <h3>
-          <strong>{currentUser.username}</strong> Profile
+          <span></span> Profile
         </h3>
       </header>
-      <p>
+      {/* <p>
         <strong>Token:</strong> {currentUser.accessToken.substring(0, 20)} ...{" "}
         {currentUser.accessToken.substr(currentUser.accessToken.length - 20)}
       </p>
@@ -21,7 +22,9 @@ const Profile: React.FC = () => {
       <strong>Authorities:</strong>
       <span>
         {currentUser.role}
-      </span>
+      </span> */}
+    </div>
+    <Footer />
     </div>
   );
 };

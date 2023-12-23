@@ -27,7 +27,7 @@ const AddRecipe: React.FC = () => {
         published: recipe.published
     };
     RecipeDataService.create(data)
-    .then((response: any) => {
+    .then((response) => {
         setRecipe({
             title: response.data.title,
             content: response.data.content,

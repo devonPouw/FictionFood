@@ -1,6 +1,13 @@
+import Footer from "@/components/footer/Footer";
+import NavBar from "@/components/header/NavBar";
 
 export default function Home() {
+ 
   return (
-    <div className="container w-full"><div>Home</div></div>
+    <div>
+      <NavBar />
+      Home
+      <Footer />
+    </div>
   )
 }
