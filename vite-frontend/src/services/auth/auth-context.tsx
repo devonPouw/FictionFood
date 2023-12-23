@@ -1,30 +1,59 @@
-import { createContext, ReactNode, useState} from "react";
+import axios from "axios";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-type Props = {
-  children?: ReactNode;
+interface AuthContextProps {
+  token: string | null;
+  setToken: (newToken: string | null) => void;
 }
 
-type IAuthContext = {
-  authenticated: boolean;
-  setAuthenticated: (newState: boolean) => void
-}
+const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-const initialValue = {
-  authenticated: false,
-  setAuthenticated: () => {}
-}
+const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [authToken, setAuthToken] = useState<string | null>(sessionStorage.getItem("token"));
 
-const AuthContext = createContext<IAuthContext>(initialValue);
+  const setToken = (newToken: string | null) => {
+    setAuthToken(newToken);
+  };
 
-const AuthProvider = ({ children }: Props) => {
-  
-  const [authenticated, setAuthenticated] = useState(initialValue.authenticated)
+  useEffect(() => {
+    const setAxiosHeaders = () => {
+      if (authToken) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
+        sessionStorage.setItem('token', authToken);
+      } else {
+        delete axios.defaults.headers.common["Authorization"];
+        sessionStorage.removeItem('token');
+      }
+    };
+
+    setAxiosHeaders();
+
+    return () => {
+      // Cleanup logic, if needed
+    };
+  }, [authToken]);
+
+  const authContextValue = useMemo(
+    () => ({
+      token: authToken,
+      setToken,
+    }),
+    [authToken]
+  );
 
   return (
-    <AuthContext.Provider value={{authenticated, setAuthenticated}}>
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export { AuthContext, AuthProvider};
+export const useAuth = (): AuthContextProps => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
+
+export default AuthProvider;
