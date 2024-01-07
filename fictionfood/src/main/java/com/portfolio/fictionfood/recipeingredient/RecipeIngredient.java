@@ -14,10 +14,10 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Table(name = "RECIPE_INGREDIENTS")
 public class RecipeIngredient {
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private Double quantity;

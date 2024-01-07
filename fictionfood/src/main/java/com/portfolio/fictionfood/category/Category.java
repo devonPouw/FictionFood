@@ -14,13 +14,14 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-//@Table(name = "CATEGORIES")
+@Table(name = "CATEGORIES")
 public class Category {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String name;
-    @ManyToMany
+
+    @ManyToMany(mappedBy = "categories")
     private List<Recipe> recipes;
 }

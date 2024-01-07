@@ -1,11 +1,11 @@
 package com.portfolio.fictionfood.ingredient;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.List;
 
 
 @Jacksonized
@@ -15,12 +15,12 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-//@Table(name = "INGREDIENTS")
+@Table(name = "INGREDIENTS")
 public class Ingredient {
-
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
     private String name;
-
+    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
+    private List<RecipeIngredient> recipeIngredients;
 }

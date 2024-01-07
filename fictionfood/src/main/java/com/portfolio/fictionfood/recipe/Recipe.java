@@ -21,10 +21,10 @@ import java.util.Set;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
-//@Table(name = "RECIPES")
+@Table(name = "RECIPES")
 public class Recipe {
-    @GeneratedValue
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @NonNull
@@ -55,20 +55,18 @@ public class Recipe {
     private Boolean published;
 
     @JsonView({RecipeViews.GetRecipeList.class})
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<Category> category;
+    @ManyToMany
+    @JoinTable(
+            name = "recipe_categories"
+    )
+    private Set<Category> categories;
 
     @NonNull
     @JsonView({RecipeViews.GetRecipeList.class})
     @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime datePublished;
 
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<RecipeIngredient> recipeIngredients;
-
-    public void addRecipeIngredient(RecipeIngredient recipeIngredient) {
-        recipeIngredients.add(recipeIngredient);
-    }
 }

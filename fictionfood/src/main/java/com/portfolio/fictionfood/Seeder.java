@@ -81,7 +81,6 @@ public class Seeder implements CommandLineRunner {
 
         recipeIngredientRepository.saveAll(Set.of(recipeIngredient, recipeIngredient1));
 
-
         recipe.setTitle("Pasta");
         recipe.setSummary("This pasta is really good");
         recipe.setContent("Still don't believe it? Make it, you donut!");
@@ -89,7 +88,7 @@ public class Seeder implements CommandLineRunner {
         recipe.setAuthor(user);
         recipe.setRating(BigDecimal.valueOf(5.0));
         recipe.setDatePublished(LocalDateTime.now());
-        recipe.setCategory(Set.of(category, category1));
+        recipe.setCategories(Set.of(category, category1));
         recipe.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
 
         recipeRepository.save(recipe);
