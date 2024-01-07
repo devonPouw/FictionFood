@@ -3,6 +3,7 @@ package com.portfolio.fictionfood.recipe;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
+import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredientRepository;
 import com.portfolio.fictionfood.user.User;
 import com.portfolio.fictionfood.user.UserRepository;
@@ -73,14 +74,23 @@ public class RecipeController {
             recipe.setRating(BigDecimal.valueOf(0.0));
             recipe.setDatePublished(LocalDateTime.now());
 //                  recipe.setAmountOfReviews(0);
-            recipe.setCategory(new HashSet<>(Arrays.stream(recipeDto.getCategories())
+            recipe.setCategories(new HashSet<>(Arrays.stream(recipeDto.getCategories())
                     .map(categoryDto -> {
                         Category category = new Category();
                         category.setName(categoryDto.getName());
                         return category;
                     })
                     .collect(Collectors.toSet())));
-
+            recipe.setRecipeIngredients(new HashSet<>(Arrays.stream(recipeDto.getRecipeIngredients())
+                    .map(recipeIngredientDto -> {
+                        RecipeIngredient recipeIngredient = new RecipeIngredient();
+                        recipeIngredient.setRecipe(recipe);
+                        recipeIngredient.setIngredient(ingredientRepository.findByNameIgnoringCase(recipeIngredientDto.getName()).orElseThrow());
+                        recipeIngredient.setQuantity(recipeIngredientDto.getQuantity());
+                        recipeIngredient.setUnit(recipeIngredientDto.getUnit());
+                        return recipeIngredient;
+                    })
+                    .collect(Collectors.toSet())));
 
             return new ResponseEntity<>(recipeRepository.save(recipe), HttpStatus.CREATED);
         } catch (RuntimeException e) {
