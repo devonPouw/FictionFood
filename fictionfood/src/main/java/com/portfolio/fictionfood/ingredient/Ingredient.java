@@ -15,13 +15,12 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Table(name = "INGREDIENTS")
+//@Table(name = "INGREDIENTS")
 public class Ingredient {
 
     @Id
     @GeneratedValue
     private Long id;
-
     private String name;
 
 }

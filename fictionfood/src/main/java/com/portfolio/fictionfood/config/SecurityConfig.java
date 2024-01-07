@@ -34,6 +34,8 @@ import java.util.function.Function;
 
 import static com.portfolio.fictionfood.user.UserRole.CHEF;
 import static com.portfolio.fictionfood.user.UserRole.MODERATOR;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @EnableWebSecurity
@@ -70,7 +72,8 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests((auth) -> {
             matchAll.apply(auth).apply("/api/auth/**").permitAll();
-
+            match.apply(auth).apply("api/recipes", POST).hasAnyRole(allUsers);
+            match.apply(auth).apply("api/recipes/*", GET).permitAll();
             auth.anyRequest().authenticated();
         });
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
