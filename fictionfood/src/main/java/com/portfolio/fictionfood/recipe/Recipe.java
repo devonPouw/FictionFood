@@ -2,6 +2,7 @@ package com.portfolio.fictionfood.recipe;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "RECIPES")
+//@Table(name = "RECIPES")
 public class Recipe {
     @GeneratedValue
     @Id
@@ -42,19 +43,20 @@ public class Recipe {
     @JsonView({RecipeViews.GetRecipeList.class})
     private BigDecimal rating;
 
-    private Long amountOfReviews;
+//    private Set<User> amountOfReviews;
 
-    @NonNull
+//    @NonNull
     @JsonView({RecipeViews.GetRecipeList.class})
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = true) //set to false later
     @JsonManagedReference
     private User author;
 
     private Boolean published;
 
     @JsonView({RecipeViews.GetRecipeList.class})
-    private Set<String> category;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private Set<Category> category;
 
     @NonNull
     @JsonView({RecipeViews.GetRecipeList.class})
