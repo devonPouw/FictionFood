@@ -38,7 +38,7 @@ const Routes = () => {
           element: <Profile />,
         },
         {
-            path: "/recipe/new",
+            path: "/recipes/new",
             element: <AddRecipe />,
           },
         {
