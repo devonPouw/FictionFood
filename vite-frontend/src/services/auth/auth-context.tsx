@@ -9,8 +9,8 @@ interface AuthContextProps {
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [authToken, setAuthToken] = useState<string | null>(sessionStorage.getItem("token"));
-
+  const [authToken, setAuthToken] = useState<string | null>(localStorage.getItem("token"));
+  
   const setToken = (newToken: string | null) => {
     setAuthToken(newToken);
   };
@@ -19,10 +19,10 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     const setAxiosHeaders = () => {
       if (authToken) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${authToken}`;
-        sessionStorage.setItem('token', authToken);
+        localStorage.setItem('token', authToken);
       } else {
         delete axios.defaults.headers.common["Authorization"];
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
       }
     };
 
