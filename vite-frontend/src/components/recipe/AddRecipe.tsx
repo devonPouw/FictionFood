@@ -1,15 +1,20 @@
 import RecipeDataService from "@/services/recipe/RecipeService";
-import IRecipeData from "@/types/Recipe";
+import { IRecipeData } from "@/types/Recipe";
 import { ChangeEvent, useState } from "react";
+import NavBar from "../header/NavBar";
 
 const AddRecipe: React.FC = () => {
     const initialRecipeState = {
         id: null,
         title: "",
+        summary: "",
         content: "",
-        published: false,
+        recipeIngredients: [],
+        categories: [],
+        isPublished: false,
+        author: {},
         rating: 0.0,
-        author: ""
+        datePublished: ""
     };
     const [recipe, setRecipe] = useState<IRecipeData>(initialRecipeState)
     const [submitted, setSubmitted] = useState<boolean>(false)
@@ -21,19 +26,27 @@ const AddRecipe: React.FC = () => {
     const saveRecipe = () => {
         const data = {
         title: recipe.title,
+        summary: recipe.summary,
         content: recipe.content,
-        rating: recipe.rating,
+        recipeIngredients: recipe.recipeIngredients,
+        categories: recipe.categories,
+        published: recipe.isPublished,
         author: recipe.author,
-        published: recipe.published
+        rating: recipe.rating,
+        datePublished: recipe.datePublished
     };
     RecipeDataService.create(data)
     .then((response) => {
         setRecipe({
             title: response.data.title,
+            summary: response.data.summary,
             content: response.data.content,
-            published: response.data.published,
+            recipeIngredients: response.data.recipeIngredients,
+            categories: response.data.categories,
+            isPublished: response.data.isPublished,
+            author: response.data.author,
             rating: initialRecipeState.rating,
-            author: response.data.author
+            datePublished: response.data.datePublished
         });
         setSubmitted(true)
         console.log(response.data)
@@ -47,6 +60,8 @@ const newRecipe = () => {
     setSubmitted(false);
 }
 return (
+  <>
+  <NavBar />
     <div className="submit-form">
       {submitted ? (
         <div>
@@ -89,6 +104,7 @@ return (
         </div>
       )}
     </div>
+    </>
   );
 };
 

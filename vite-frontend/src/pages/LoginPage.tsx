@@ -23,6 +23,7 @@ const Login: React.FC= () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const { setToken } = useAuth();
+  
   const handleLogin = (formValue: { username: string; password: string }) => {
     const { username, password } = formValue;
     
@@ -66,6 +67,7 @@ const Login: React.FC= () => {
   })
 
   return (
+    <div className="w-screen h-screen flex">
     <div className="container place-self-center">
       <div className="container">
         <Form {...form}>
@@ -102,7 +104,8 @@ const Login: React.FC= () => {
             <div className="w-full flex justify-center">
               <div>
             <div>
-            <Button className="w-32 md:24 border-2" type="submit">Submit</Button>
+            <Button className="w-32 md:24 border-2" type="submit" disabled={form.control._defaultValues.username === form.getValues().username 
+              || form.control._defaultValues.password === form.getValues().password}>Submit</Button>
               {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
@@ -121,6 +124,7 @@ const Login: React.FC= () => {
           <Link to={"/register"}>
             <span className="hover:text-slate-400">Don't have an account yet? Click here to register!</span>
           </Link>
+        </div>
         </div>
         </div>
         </div>

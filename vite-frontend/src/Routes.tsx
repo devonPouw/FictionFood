@@ -6,17 +6,16 @@ import RegisterPage from "./pages/RegisterPage"
 import Home from "./pages/Home";
 import Profile from "./components/auth/Profile";
 import AddRecipe from "./components/recipe/AddRecipe";
+import Recipes from "./pages/Recipes";
 
 
 const Routes = () => {
     const { token } = useAuth();
-    // Route configurations go here
-
 
   const routesForPublic = [
     {
       path: "/recipes",
-      element: <div>Service Page</div>,
+      element: <Recipes />,
     },
     {
       path: "/about-us",
