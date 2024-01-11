@@ -24,6 +24,7 @@ public class RecipeIngredient {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonBackReference
     private Ingredient ingredient;
 
     @ManyToOne

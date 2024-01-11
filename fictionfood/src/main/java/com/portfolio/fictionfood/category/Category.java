@@ -1,5 +1,7 @@
 package com.portfolio.fictionfood.category;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.portfolio.fictionfood.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,5 +25,6 @@ public class Category {
     private String name;
 
     @ManyToMany(mappedBy = "categories")
+    @JsonManagedReference
     private List<Recipe> recipes;
 }

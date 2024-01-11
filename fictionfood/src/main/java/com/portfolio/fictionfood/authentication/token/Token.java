@@ -13,7 +13,6 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Entity
 public class Token {
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;

@@ -1,5 +1,6 @@
 package com.portfolio.fictionfood.image;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.portfolio.fictionfood.recipe.Recipe;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
@@ -23,9 +24,11 @@ public class Image {
     private String type;
 
     @OneToOne
+    @JsonManagedReference
     private Recipe recipe;
 
     @OneToOne
+    @JsonManagedReference
     private User user;
 
     @Lob

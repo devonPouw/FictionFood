@@ -1,8 +1,10 @@
 package com.portfolio.fictionfood.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.authentication.token.Token;
+import com.portfolio.fictionfood.image.Image;
 import com.portfolio.fictionfood.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,9 +58,13 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     private Set<Token> tokens;
 
-    @JsonBackReference
     @OneToMany(mappedBy = "author")
+    @JsonManagedReference
     private Set<Recipe> recipes;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonBackReference
+    private Image avatar;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

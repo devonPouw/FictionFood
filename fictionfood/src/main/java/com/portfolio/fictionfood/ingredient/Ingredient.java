@@ -1,5 +1,6 @@
 package com.portfolio.fictionfood.ingredient;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,5 +23,6 @@ public class Ingredient {
     private Long id;
     private String name;
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<RecipeIngredient> recipeIngredients;
 }
