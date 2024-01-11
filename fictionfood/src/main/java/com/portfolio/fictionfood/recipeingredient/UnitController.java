@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UnitController {
 
     @GetMapping
-    public Unit[] getUnits(){
+    public Unit[] getUnits() {
         return Unit.values();
     }
 }
