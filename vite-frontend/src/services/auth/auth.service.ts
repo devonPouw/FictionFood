@@ -23,7 +23,6 @@ export const register = async (role: string, nickname: string, username: string,
         username,
         password,
       });
-  
       return response.data;
     } catch (error) {
       console.error("Login failed:", error);
@@ -34,10 +33,9 @@ export const register = async (role: string, nickname: string, username: string,
   export const logout = async () => {
     try {
       await http.post("/auth/logout");
-      sessionStorage.removeItem("token");
     } catch (error) {
       console.error("Logout failed:", error);
-      // Handle error as needed
+      throw error;
     }
   };
 

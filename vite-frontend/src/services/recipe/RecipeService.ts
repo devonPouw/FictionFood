@@ -1,8 +1,8 @@
 import http from "@/http-common"
-import IRecipeData from "@/types/Recipe"
+import { IRecipeList, IRecipeData } from "@/types/Recipe"
 
-const getAll = () => {
-    return http.get<Array<IRecipeData>>("/recipes")
+const getAll = (page: number, amount: number) => {
+    return http.get<IRecipeList>("/recipes" + "?page=" + page + "&size=" + amount)
 }
 const get = (id: number) => {
     return http.get<IRecipeData>(`/recipes/${id}`);
