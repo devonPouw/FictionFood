@@ -18,5 +18,5 @@ public class RecipeDto {
     private String content;
     private RecipeIngredientDto[] recipeIngredients;
     private CategoryDto[] categories;
-    private Boolean published;
+    private Boolean isPublished;
 }
