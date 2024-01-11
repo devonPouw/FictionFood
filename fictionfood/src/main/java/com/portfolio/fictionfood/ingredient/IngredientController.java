@@ -14,11 +14,12 @@ public class IngredientController {
     IngredientRepository ingredientRepository;
 
     @GetMapping
-    public List<Ingredient> allIngredients(){
+    public List<Ingredient> allIngredients() {
         return ingredientRepository.findAll();
     }
+
     @PostMapping
-    public Ingredient addIngredient(@RequestBody Ingredient ingredient){
+    public Ingredient addIngredient(@RequestBody Ingredient ingredient) {
         return ingredientRepository.save(ingredient);
     }
 }

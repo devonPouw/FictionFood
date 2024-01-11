@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.recipe;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
@@ -11,6 +10,9 @@ import com.portfolio.fictionfood.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,8 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,35 +29,52 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/recipes")
 public class RecipeController {
+
     @Value("${app.recipe-rules.max-per-month}")
     int maxRecipesPerMonth;
-    @Autowired
-    private RecipeRepository recipeRepository;
-    Function<User, Boolean> hasNotExceededMaxPerMonth = user ->
-            recipeRepository.countByAuthorAndDatePublishedAfter(user, LocalDateTime.now().minusMonths(1)) < maxRecipesPerMonth;
     @Autowired
     private IngredientRepository ingredientRepository;
     @Autowired
     private RecipeIngredientRepository recipeIngredientRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RecipeRepository recipeRepository;
+    Function<User, Boolean> hasNotExceededMaxPerMonth = user ->
+            recipeRepository.countByAuthorAndDatePublishedAfter(user, LocalDateTime.now().minusMonths(1)) < maxRecipesPerMonth;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Recipe> recipeById(@PathVariable("id") long id) {
-        var recipe = recipeRepository.findById(id);
-        if (recipe.isPresent()) {
-            return ResponseEntity.of(recipe);
-        } else {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<Recipe> getRecipeById(@PathVariable("id") long id) {
+        try {
+            return new ResponseEntity<>(recipeRepository.findByIdAndIsPublished(id, true).orElseThrow(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    //    @JsonView(RecipeViews.GetRecipeList.class)
     @GetMapping
-    public Iterable<Recipe> allRecipes() {
-        return recipeRepository.findAll();
+    public ResponseEntity<Map<String, Object>> getAllRecipes(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        try {
+            PageRequest paging = PageRequest.of(page, size, Sort.by("datePublished").descending());
+            Page<Recipe> pageRecipes = recipeRepository.findByIsPublished(true, paging);
+
+            List<Recipe> recipes = pageRecipes.getContent();
+
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("recipes", recipes);
+            responseBody.put("currentPage", pageRecipes.getNumber());
+            responseBody.put("totalItems", pageRecipes.getTotalElements());
+            responseBody.put("totalPages", pageRecipes.getTotalPages());
+
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @JsonView(RecipeViews.GetRecipeList.class)
+    //    @JsonView(RecipeViews.GetRecipeList.class)
     @PostMapping
     public ResponseEntity<Recipe> postRecipe(@Validated @RequestBody RecipeDto recipeDto,
                                              @AuthenticationPrincipal User currentUser) {
@@ -69,7 +87,7 @@ public class RecipeController {
             recipe.setTitle(recipeDto.getTitle());
             recipe.setSummary(recipeDto.getSummary());
             recipe.setContent(recipeDto.getContent());
-            recipe.setPublished(recipeDto.getPublished());
+            recipe.setIsPublished(recipeDto.getIsPublished());
             recipe.setAuthor(currentUser);
             recipe.setRating(BigDecimal.valueOf(0.0));
             recipe.setDatePublished(LocalDateTime.now());
@@ -98,14 +116,13 @@ public class RecipeController {
         }
     }
 
-    boolean checkIfAllowedToPost(User user) {
-        return user.getRole().equals(UserRole.MODERATOR) || (user.getRole().equals(UserRole.CHEF)
-                && hasNotExceededMaxPerMonth.apply(user));
-    }
-
     @DeleteMapping("/{id}")
     public void deleteRecipeById(@PathVariable("id") long id) {
         recipeRepository.deleteById(id);
     }
 
+    boolean checkIfAllowedToPost(User user) {
+        return user.getRole().equals(UserRole.MODERATOR) || (user.getRole().equals(UserRole.CHEF)
+                && hasNotExceededMaxPerMonth.apply(user));
+    }
 }

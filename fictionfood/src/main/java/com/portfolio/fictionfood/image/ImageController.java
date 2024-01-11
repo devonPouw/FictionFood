@@ -12,7 +12,7 @@ import java.io.IOException;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
-@RequestMapping("/api/image")
+@RequestMapping("/api/images")
 @RequiredArgsConstructor
 public class ImageController {
 
