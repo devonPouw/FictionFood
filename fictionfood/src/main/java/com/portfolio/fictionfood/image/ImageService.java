@@ -27,7 +27,6 @@ public class ImageService {
 
     public byte[] downloadImage(String imageName) {
         Optional<Image> dbImage = imageRepository.findByName(imageName);
-
         return dbImage.map(image -> {
             try {
                 return ImageUtils.decompressImage(image.getImageData());

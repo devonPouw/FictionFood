@@ -16,13 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -47,8 +44,6 @@ public class Seeder implements CommandLineRunner {
         Recipe recipe2 = new Recipe();
         recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2));
 
-
-
         User user = new User();
         user.setRole(UserRole.MODERATOR);
         user.setNickname("GordonRamsay");
@@ -62,9 +57,9 @@ public class Seeder implements CommandLineRunner {
         Category category1 = new Category();
         category1.setName("Pixar");
         Category category2 = new Category();
-        category.setName("Lord of the Rings");
+        category2.setName("Lord of the Rings");
         Category category3 = new Category();
-        category1.setName("Star Wars");
+        category3.setName("Star Wars");
 
         Ingredient ingredient = new Ingredient();
         ingredient.setName("Flour");
@@ -140,7 +135,7 @@ public class Seeder implements CommandLineRunner {
         recipe1.setAuthor(user);
         recipe1.setRating(BigDecimal.valueOf(4.2));
         recipe1.setDatePublished(LocalDateTime.now().minusSeconds(550));
-        recipe1.setCategories(Set.of(category, category1));
+        recipe1.setCategories(Set.of(category2));
         recipe1.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
         recipe1.setImage(null);
 
@@ -151,7 +146,7 @@ public class Seeder implements CommandLineRunner {
         recipe2.setAuthor(user);
         recipe2.setRating(BigDecimal.valueOf(5.0));
         recipe2.setDatePublished(LocalDateTime.now().minusSeconds(210));
-        recipe2.setCategories(Set.of(category, category1));
+        recipe2.setCategories(Set.of(category, category3));
         recipe2.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
         recipe2.setImage(null);
 
