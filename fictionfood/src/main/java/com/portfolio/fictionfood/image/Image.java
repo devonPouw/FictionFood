@@ -1,7 +1,9 @@
 package com.portfolio.fictionfood.image;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.recipe.Recipe;
+import com.portfolio.fictionfood.recipe.RecipeViews;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,18 +21,22 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @JsonView({RecipeViews.GetRecipeList.class})
     private String name;
 
+    @JsonView({RecipeViews.GetRecipeList.class})
     private String type;
 
+    @JsonView({RecipeViews.GetRecipeList.class})
     @OneToOne
-    @JsonManagedReference
+    @JsonBackReference
     private Recipe recipe;
 
     @OneToOne
-    @JsonManagedReference
+    @JsonBackReference
     private User user;
 
+    @JsonView({RecipeViews.GetRecipeList.class})
     @Lob
     private byte[] imageData;
 }

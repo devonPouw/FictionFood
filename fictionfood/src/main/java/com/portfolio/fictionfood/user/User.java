@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.authentication.token.Token;
 import com.portfolio.fictionfood.image.Image;
 import com.portfolio.fictionfood.recipe.Recipe;
+import com.portfolio.fictionfood.recipe.RecipeViews;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
@@ -43,7 +44,7 @@ public class User implements UserDetails {
     private String email;
 
     @NonNull
-    @JsonView({UserViews.viewMe.class})
+    @JsonView({UserViews.viewMe.class, RecipeViews.GetRecipeList.class})
     @Column(unique = true)
     private String nickname;
 
@@ -56,14 +57,16 @@ public class User implements UserDetails {
     private UserRole role;
 
     @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private Set<Token> tokens;
 
     @OneToMany(mappedBy = "author")
-    @JsonManagedReference
+    @JsonBackReference
     private Set<Recipe> recipes;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonBackReference
+    @JsonView({UserViews.viewMe.class, RecipeViews.GetRecipeList.class})
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Image avatar;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {

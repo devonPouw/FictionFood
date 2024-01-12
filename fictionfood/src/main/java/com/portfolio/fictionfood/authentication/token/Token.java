@@ -1,5 +1,6 @@
 package com.portfolio.fictionfood.authentication.token;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,7 @@ public class Token {
     private boolean expired;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     private User user;

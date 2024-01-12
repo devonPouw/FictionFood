@@ -1,5 +1,6 @@
 package com.portfolio.fictionfood.recipe;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
@@ -52,7 +53,7 @@ public class RecipeController {
         }
     }
 
-    //    @JsonView(RecipeViews.GetRecipeList.class)
+    @JsonView(RecipeViews.GetRecipeList.class)
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllRecipes(@RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size) {
@@ -67,7 +68,6 @@ public class RecipeController {
             responseBody.put("currentPage", pageRecipes.getNumber());
             responseBody.put("totalItems", pageRecipes.getTotalElements());
             responseBody.put("totalPages", pageRecipes.getTotalPages());
-
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
