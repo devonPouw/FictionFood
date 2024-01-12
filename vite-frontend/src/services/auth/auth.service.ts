@@ -30,9 +30,14 @@ export const register = async (role: string, nickname: string, username: string,
     }
   };
   
-  export const logout = async () => {
+  export const logout = async (token: string) => {
     try {
-      await http.post("/auth/logout");
+      await http.post("/auth/logout", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-type": "application/json",
+        },
+      });
     } catch (error) {
       console.error("Logout failed:", error);
       throw error;

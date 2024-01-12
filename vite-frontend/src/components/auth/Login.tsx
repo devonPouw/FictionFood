@@ -23,8 +23,10 @@ const Login:React.FC = () => {
     const data = parseJwt(token)
     
     const handleLogout = () => {
-      logout().then(() => {
+      if(token)
+      logout(token).then(() => {
         try{
+          console.log(token)
         localStorage.removeItem("token");
         navigate("/")
         console.log("Logout succesful")
