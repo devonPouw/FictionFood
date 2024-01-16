@@ -18,4 +18,5 @@ public class RecipeDto {
     private RecipeIngredientDto[] recipeIngredients;
     private CategoryDto[] categories;
     private Boolean isPublished;
+    private String image;
 }
