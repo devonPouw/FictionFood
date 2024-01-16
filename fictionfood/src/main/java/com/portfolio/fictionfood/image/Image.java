@@ -1,25 +1,24 @@
 package com.portfolio.fictionfood.image;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.portfolio.fictionfood.recipe.Recipe;
 import com.portfolio.fictionfood.recipe.RecipeViews;
-import com.portfolio.fictionfood.user.User;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Lob;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.jpa.domain.AbstractPersistable;
 
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "IMAGES")
-public class Image {
+public abstract class Image extends AbstractPersistable<Long> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+//    private Long id;
 
     @JsonView({RecipeViews.GetRecipeList.class})
     private String name;
@@ -28,15 +27,8 @@ public class Image {
     private String type;
 
     @JsonView({RecipeViews.GetRecipeList.class})
-    @OneToOne
-    @JsonBackReference
-    private Recipe recipe;
-
-    @OneToOne
-    @JsonBackReference
-    private User user;
-
-    @JsonView({RecipeViews.GetRecipeList.class})
     @Lob
     private byte[] imageData;
+
+    abstract void setLink(Object object);
 }

@@ -1,5 +1,7 @@
 package com.portfolio.fictionfood.image;
 
+import com.portfolio.fictionfood.recipe.Recipe;
+import com.portfolio.fictionfood.user.User;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.springframework.stereotype.Service;
@@ -15,20 +17,31 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
 
-    public String uploadImage(MultipartFile imageFile) throws IOException {
-        var imageToSave = Image.builder()
-                .name(imageFile.getOriginalFilename())
-                .type(imageFile.getContentType())
-                .imageData(ImageUtils.compressImage(imageFile.getBytes()))
-                .build();
-        imageRepository.save(imageToSave);
+    public Image setImage(Object object){
+        if (object instanceof Recipe) {
+            return new RecipeImage();
+        }
+        else if (object instanceof User){
+            return new UserImage();
+        }
+        return null;
+    }
+
+    public String uploadRecipeImage(MultipartFile imageFile, Object object) throws IOException {
+        var image = setImage(object);
+        image.setName(imageFile.getOriginalFilename());
+        image.setType(imageFile.getContentType());
+        image.setImageData(ImageUtils.compressImage(imageFile.getBytes()));
+        image.setLink(object);
+        imageRepository.save(image);
         return "file uploaded successfully : " + imageFile.getOriginalFilename();
     }
 
-    public byte[] downloadImage(String imageName) {
+    public byte[] downloadRecipeImage(String imageName) {
         Optional<Image> dbImage = imageRepository.findByName(imageName);
         return dbImage.map(image -> {
             try {
+
                 return ImageUtils.decompressImage(image.getImageData());
             } catch (DataFormatException | IOException exception) {
                 throw new ContextedRuntimeException("Error downloading an image", exception)
