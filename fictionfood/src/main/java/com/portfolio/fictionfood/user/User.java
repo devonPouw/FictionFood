@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.authentication.token.Token;
-import com.portfolio.fictionfood.image.Image;
+import com.portfolio.fictionfood.image.UserImage;
 import com.portfolio.fictionfood.recipe.Recipe;
 import com.portfolio.fictionfood.recipe.RecipeViews;
 import jakarta.persistence.*;
@@ -67,7 +67,7 @@ public class User implements UserDetails {
     @JsonView({UserViews.viewMe.class, RecipeViews.GetRecipeList.class})
     @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Image avatar;
+    private UserImage avatar;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();

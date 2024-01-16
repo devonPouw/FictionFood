@@ -3,7 +3,7 @@ package com.portfolio.fictionfood.recipe;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.category.Category;
-import com.portfolio.fictionfood.image.Image;
+import com.portfolio.fictionfood.image.RecipeImage;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
@@ -15,14 +15,13 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Jacksonized
-@Entity
+@Entity(name = "RECIPES")
 @Getter
 @Setter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "RECIPES")
 public class Recipe {
 
     @JsonView({RecipeViews.GetRecipeList.class})
@@ -49,7 +48,7 @@ public class Recipe {
     @JsonView({RecipeViews.GetRecipeList.class})
     @OneToOne
     @JsonManagedReference
-    private Image image;
+    private RecipeImage image;
     //    @NonNull
     @JsonView({RecipeViews.GetRecipeList.class})
     @ManyToOne

@@ -44,12 +44,14 @@ public class Seeder implements CommandLineRunner {
         Recipe recipe2 = new Recipe();
         recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2));
 
-        User user = new User();
-        user.setRole(UserRole.MODERATOR);
-        user.setNickname("GordonRamsay");
-        user.setUsername("mod");
-        user.setEmail("ramsay@example.com");
-        user.setPassword(passwordEncoder.encode("123"));
+        var user = User.builder()
+                .nickname("GordonRamsay")
+                .username("mod")
+                .email("ramsay@example.com")
+                .role(UserRole.MODERATOR)
+                .password(passwordEncoder.encode("123"))
+                .build();
+
         userRepository.save(user);
 
         Category category = new Category();
@@ -60,6 +62,8 @@ public class Seeder implements CommandLineRunner {
         category2.setName("Lord of the Rings");
         Category category3 = new Category();
         category3.setName("Star Wars");
+
+        categoryRepository.saveAll(Set.of(category, category1, category2, category3));
 
         Ingredient ingredient = new Ingredient();
         ingredient.setName("Flour");
@@ -74,45 +78,49 @@ public class Seeder implements CommandLineRunner {
         Ingredient ingredient5 = new Ingredient();
         ingredient5.setName("Gravy");
 
-        categoryRepository.saveAll(Set.of(category, category1, category2, category3));
         ingredientRepository.saveAll(Set.of(ingredient, ingredient1, ingredient2, ingredient3, ingredient4, ingredient5));
 
-        RecipeIngredient recipeIngredient = new RecipeIngredient();
-        recipeIngredient.setIngredient(ingredient);
-        recipeIngredient.setQuantity(500D);
-        recipeIngredient.setUnit(Unit.GRAM);
+        var recipeIngredient = RecipeIngredient.builder()
+                .ingredient(ingredient)
+                .quantity(500D)
+                .unit(Unit.GRAM)
+                .recipe(recipe)
+                .build();
 
-        RecipeIngredient recipeIngredient1 = new RecipeIngredient();
-        recipeIngredient1.setIngredient(ingredient1);
-        recipeIngredient1.setQuantity(2D);
-        recipeIngredient1.setUnit(Unit.PIECE);
+        var recipeIngredient1 = RecipeIngredient.builder()
+                .ingredient(ingredient1)
+                .quantity(2D)
+                .unit(Unit.PIECE)
+                .recipe(recipe)
+                .build();
 
-        RecipeIngredient recipeIngredient2 = new RecipeIngredient();
-        recipeIngredient2.setIngredient(ingredient2);
-        recipeIngredient2.setQuantity(300D);
-        recipeIngredient2.setUnit(Unit.GRAM);
+        var recipeIngredient2 = RecipeIngredient.builder()
+                .ingredient(ingredient2)
+                .quantity(300D)
+                .unit(Unit.GRAM)
+                .recipe(recipe1)
+                .build();
 
-        RecipeIngredient recipeIngredient3 = new RecipeIngredient();
-        recipeIngredient3.setIngredient(ingredient3);
-        recipeIngredient3.setQuantity(100D);
-        recipeIngredient3.setUnit(Unit.MILLILITRE);
+        var recipeIngredient3 = RecipeIngredient.builder()
+                .ingredient(ingredient3)
+                .quantity(100D)
+                .unit(Unit.MILLILITRE)
+                .recipe(recipe1)
+                .build();
 
-        RecipeIngredient recipeIngredient4 = new RecipeIngredient();
-        recipeIngredient4.setIngredient(ingredient4);
-        recipeIngredient4.setQuantity(150D);
-        recipeIngredient4.setUnit(Unit.GRAM);
+        var recipeIngredient4 = RecipeIngredient.builder()
+                .ingredient(ingredient4)
+                .quantity(150D)
+                .unit(Unit.GRAM)
+                .recipe(recipe2)
+                .build();
 
-        RecipeIngredient recipeIngredient5 = new RecipeIngredient();
-        recipeIngredient5.setIngredient(ingredient5);
-        recipeIngredient5.setQuantity(100D);
-        recipeIngredient5.setUnit(Unit.MILLILITRE);
-
-        recipeIngredient.setRecipe(recipe);
-        recipeIngredient1.setRecipe(recipe);
-        recipeIngredient2.setRecipe(recipe1);
-        recipeIngredient3.setRecipe(recipe1);
-        recipeIngredient4.setRecipe(recipe2);
-        recipeIngredient5.setRecipe(recipe2);
+        var recipeIngredient5 = RecipeIngredient.builder()
+                .ingredient(ingredient5)
+                .quantity(100D)
+                .unit(Unit.MILLILITRE)
+                .recipe(recipe2)
+                .build();
 
         recipeIngredientRepository.saveAll(Set.of(recipeIngredient, recipeIngredient1, recipeIngredient2,
                 recipeIngredient3, recipeIngredient4, recipeIngredient5));
