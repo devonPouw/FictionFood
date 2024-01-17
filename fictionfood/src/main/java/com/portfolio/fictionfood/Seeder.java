@@ -2,6 +2,9 @@ package com.portfolio.fictionfood;
 
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.category.CategoryRepository;
+import com.portfolio.fictionfood.image.Image;
+import com.portfolio.fictionfood.image.ImageRepository;
+import com.portfolio.fictionfood.image.ImageService;
 import com.portfolio.fictionfood.ingredient.Ingredient;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipe.Recipe;
@@ -16,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -31,6 +35,8 @@ public class Seeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
+    private final ImageRepository imageRepository;
+    private final ImageService imageService;
 
     @Override
     public void run(String... args) throws IOException {
@@ -38,7 +44,7 @@ public class Seeder implements CommandLineRunner {
         seedRecipes();
     }
 
-    private void seedRecipes() {
+    private void seedRecipes() throws IOException {
         Recipe recipe = new Recipe();
         Recipe recipe1 = new Recipe();
         Recipe recipe2 = new Recipe();
@@ -125,6 +131,17 @@ public class Seeder implements CommandLineRunner {
         recipeIngredientRepository.saveAll(Set.of(recipeIngredient, recipeIngredient1, recipeIngredient2,
                 recipeIngredient3, recipeIngredient4, recipeIngredient5));
 
+        MultipartFile[] image;
+        image = new MultipartFile[]{
+                imageService.seedImage("src/Variety-fruits-vegetables.jpg"),
+                imageService.seedImage("src/bacon&eggs.jpg"),
+                imageService.seedImage("src/steak.jpg"),
+        };
+
+        imageService.uploadRecipeImage(image[0], recipe);
+        imageService.uploadRecipeImage(image[1], recipe1);
+        imageService.uploadRecipeImage(image[2], recipe2);
+
         recipe.setTitle("Pasta");
         recipe.setSummary("This pasta is really good");
         recipe.setContent("Still don't believe it? Make it, you donut!");
@@ -134,7 +151,7 @@ public class Seeder implements CommandLineRunner {
         recipe.setDatePublished(LocalDateTime.now());
         recipe.setCategories(Set.of(category, category1));
         recipe.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
-        recipe.setImage(null);
+        recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
 
         recipe1.setTitle("Eggs and Bacon");
         recipe1.setSummary("Just like it says");
@@ -145,7 +162,7 @@ public class Seeder implements CommandLineRunner {
         recipe1.setDatePublished(LocalDateTime.now().minusSeconds(550));
         recipe1.setCategories(Set.of(category2));
         recipe1.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
-        recipe1.setImage(null);
+        recipe1.setImage(imageRepository.findByRecipe(recipe1).orElseThrow());
 
         recipe2.setTitle("Steak");
         recipe2.setSummary("Not for vegans");
@@ -156,7 +173,7 @@ public class Seeder implements CommandLineRunner {
         recipe2.setDatePublished(LocalDateTime.now().minusSeconds(210));
         recipe2.setCategories(Set.of(category, category3));
         recipe2.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
-        recipe2.setImage(null);
+        recipe2.setImage(imageRepository.findByRecipe(recipe2).orElseThrow());
 
         recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2));
     }

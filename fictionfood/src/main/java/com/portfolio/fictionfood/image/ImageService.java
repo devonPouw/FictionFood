@@ -7,7 +7,9 @@ import org.apache.commons.lang3.exception.ContextedRuntimeException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Optional;
 import java.util.zip.DataFormatException;
 
@@ -49,5 +51,14 @@ public class ImageService {
                         .addContextValue("Image name", imageName);
             }
         }).orElse(null);
+    }
+
+    public MultipartFile seedImage(String path) throws IOException {
+        File imageFile = new File(path);
+        String name = "image";
+        String originalFilename = imageFile.getName();
+        String contentType = Files.probeContentType(imageFile.toPath());
+        byte[] content = Files.readAllBytes(imageFile.toPath());
+        return new MultipartImage(name, originalFilename, contentType, content);
     }
 }
