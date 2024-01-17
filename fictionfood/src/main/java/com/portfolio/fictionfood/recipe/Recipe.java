@@ -1,7 +1,6 @@
 package com.portfolio.fictionfood.recipe;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.image.RecipeImage;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
@@ -24,16 +23,13 @@ import java.util.Set;
 @NoArgsConstructor
 public class Recipe {
 
-    @JsonView({RecipeViews.GetRecipeList.class})
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @NonNull
-    @JsonView({RecipeViews.GetRecipeList.class})
     private String title;
 
-    @JsonView({RecipeViews.GetRecipeList.class})
     @Column(columnDefinition = "CLOB")
     private String summary;
 
@@ -41,16 +37,13 @@ public class Recipe {
     @Column(columnDefinition = "CLOB")
     private String content;
 
-    @JsonView({RecipeViews.GetRecipeList.class})
     private BigDecimal rating;
 
     //    private Set<User> amountOfReviews;
-    @JsonView({RecipeViews.GetRecipeList.class})
     @OneToOne
     @JsonManagedReference
     private RecipeImage image;
     //    @NonNull
-    @JsonView({RecipeViews.GetRecipeList.class})
     @ManyToOne
     @JoinColumn(nullable = true) //set to false later
     @JsonManagedReference
@@ -58,7 +51,6 @@ public class Recipe {
 
     private Boolean isPublished;
 
-    @JsonView({RecipeViews.GetRecipeList.class})
     @ManyToMany
     @JsonManagedReference
     @JoinTable(
@@ -67,7 +59,6 @@ public class Recipe {
     private Set<Category> categories;
 
     @NonNull
-    @JsonView({RecipeViews.GetRecipeList.class})
     @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime datePublished;
 

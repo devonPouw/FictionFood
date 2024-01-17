@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.recipe;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
@@ -53,7 +52,6 @@ public class RecipeController {
         }
     }
 
-    @JsonView(RecipeViews.GetRecipeList.class)
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllRecipes(@RequestParam(defaultValue = "0") int page,
                                                              @RequestParam(defaultValue = "10") int size) {
@@ -65,17 +63,17 @@ public class RecipeController {
             List<RecipeListDto> recipeDtos = new ArrayList<>();
 
             for (Recipe recipe : recipes) {
-            byte[] imageData = imageService.downloadRecipeImage(recipe.getImage().getName());
+                byte[] imageData = imageService.downloadRecipeImage(recipe.getImage().getName());
 
-            recipeDtos.add(RecipeListDto.builder()
-                    .title(recipe.getTitle())
-                    .summary(recipe.getSummary())
-                    .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
-                    .author(recipe.getAuthor().getNickname())
-                    .datePublished(recipe.getDatePublished())
-                    .rating(recipe.getRating())
-                    .imageData(imageData)
-                    .build());
+                recipeDtos.add(RecipeListDto.builder()
+                        .title(recipe.getTitle())
+                        .summary(recipe.getSummary())
+                        .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
+                        .author(recipe.getAuthor().getNickname())
+                        .datePublished(recipe.getDatePublished())
+                        .rating(recipe.getRating())
+                        .imageData(imageData)
+                        .build());
             }
 
             Map<String, Object> responseBody = new HashMap<>();
