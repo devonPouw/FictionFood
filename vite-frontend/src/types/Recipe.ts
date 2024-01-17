@@ -1,12 +1,13 @@
 
 export interface IRecipeData {
+    id: number,
     title: string,
     summary: string,
     categories: string[],
     rating: number,
     author: string,
     datePublished: string,
-    imageData: number[]
+    imageData: Uint8Array
 }
 export interface IPostRecipeData {
     id: number | null,

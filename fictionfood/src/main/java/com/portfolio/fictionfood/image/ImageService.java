@@ -39,7 +39,7 @@ public class ImageService {
         return "file uploaded successfully : " + imageFile.getOriginalFilename();
     }
 
-    public byte[] downloadRecipeImage(String imageName) {
+    public byte[] downloadImage(String imageName) {
         Optional<Image> dbImage = imageRepository.findByName(imageName);
         return dbImage.map(image -> {
             try {
