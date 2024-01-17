@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.recipe;
 
-import com.portfolio.fictionfood.category.CategoryDto;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredientDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RecipeDto {
+public class PostRecipeDto {
     private String title;
     private String summary;
     private String content;
     private RecipeIngredientDto[] recipeIngredients;
-    private CategoryDto[] categories;
+    private String[] categories;
     private Boolean isPublished;
-    private String image;
+    private String imageName;
 }

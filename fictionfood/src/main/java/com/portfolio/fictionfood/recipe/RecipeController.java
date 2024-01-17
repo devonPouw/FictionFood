@@ -62,21 +62,38 @@ public class RecipeController {
             Page<Recipe> pageRecipes = recipeRepository.findByIsPublished(true, paging);
 
             List<Recipe> recipes = pageRecipes.getContent();
+            List<RecipeListDto> recipeDtos = new ArrayList<>();
+
+            for (Recipe recipe : recipes) {
+            byte[] imageData = imageService.downloadRecipeImage(recipe.getImage().getName());
+
+            recipeDtos.add(RecipeListDto.builder()
+                    .title(recipe.getTitle())
+                    .summary(recipe.getSummary())
+                    .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
+                    .author(recipe.getAuthor().getNickname())
+                    .datePublished(recipe.getDatePublished())
+                    .rating(recipe.getRating())
+                    .imageData(imageData)
+                    .build());
+            }
 
             Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("recipes", recipes);
+            responseBody.put("recipes", recipeDtos);
             responseBody.put("currentPage", pageRecipes.getNumber());
             responseBody.put("totalItems", pageRecipes.getTotalElements());
             responseBody.put("totalPages", pageRecipes.getTotalPages());
+
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //    @JsonView(RecipeViews.GetRecipeList.class)
     @PostMapping
-    public ResponseEntity<?> postRecipe(@Validated @RequestBody RecipeDto recipeDto,
+    public ResponseEntity<?> postRecipe(@Validated @RequestBody PostRecipeDto recipeDto,
                                         @RequestParam("image") MultipartFile image,
                                         @AuthenticationPrincipal User currentUser) {
         if (!checkIfAllowedToPost(currentUser)) {
@@ -96,7 +113,7 @@ public class RecipeController {
             recipe.setCategories(new HashSet<>(Arrays.stream(recipeDto.getCategories())
                     .map(categoryDto -> {
                         Category category = new Category();
-                        category.setName(categoryDto.getName());
+                        category.setName(categoryDto);
                         return category;
                     })
                     .collect(Collectors.toSet())));
@@ -111,7 +128,7 @@ public class RecipeController {
                     })
                     .collect(Collectors.toSet())));
             String uploadImage = imageService.uploadRecipeImage(image, recipe);
-            recipe.setImage((RecipeImage) imageRepository.findByName(recipeDto.getImage()).orElseThrow());
+            recipe.setImage((RecipeImage) imageRepository.findByName(recipeDto.getImageName()).orElseThrow());
             recipeRepository.save(recipe);
             return new ResponseEntity<>(uploadImage, HttpStatus.CREATED);
         } catch (IOException e) {
