@@ -11,14 +11,14 @@ const RecipePreview: React.FC<RecipeProps> = ({ recipeList }) => {
       ) : (
         <div className="flex flex-row pt-10 px-10">
           {recipes.map((recipe) => (
-           <div className="w-1/4 h-20" key={recipe.id} >
+           <div className="w-1/4 h-20" key={recipe.title} >
                 <div><span>{recipe.title}</span></div>
                 <div>{recipe.rating}</div>
                 <div>{recipe.summary}</div>
                 <div>{recipe.author}</div>
                 <div>{recipe.datePublished}</div>
                 <div>{recipe.categories.map((category) => (
-                  <div key={category.id}>{category.name}</div>
+                  <div key={category}>{category}</div>
                 ))}</div>
               </div>
           ))}

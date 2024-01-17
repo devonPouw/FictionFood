@@ -1,13 +1,12 @@
 
 export interface IRecipeData {
-    id: number | null,
     title: string,
     summary: string,
     categories: string[],
     rating: number,
     author: string,
-    datePublished: string
-    image: number[]
+    datePublished: string,
+    imageData: number[]
 }
 export interface IPostRecipeData {
     id: number | null,
@@ -20,7 +19,7 @@ export interface IPostRecipeData {
     rating: number,
     author: string,
     datePublished: string
-    image: number[]
+    imageData: number[]
 }
 export interface IRecipeIngredientData {
     id: number | null,
@@ -35,9 +34,9 @@ export interface IRecipeList {
     totalItems: number,
     totalPages: number
 }
-export interface IImageData{
-    id: number | null,
-    name: string,
-    type: string,
-    imageData: number[]
-}
+// export interface IImageData{
+//     id: number | null,
+//     name: string,
+//     type: string,
+//     imageData: number[]
+// }
