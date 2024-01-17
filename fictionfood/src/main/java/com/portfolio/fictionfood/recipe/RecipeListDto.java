@@ -1,5 +1,6 @@
 package com.portfolio.fictionfood.recipe;
 
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecipeListDto {
+    private Long id;
     private String title;
     private String summary;
     private String author;

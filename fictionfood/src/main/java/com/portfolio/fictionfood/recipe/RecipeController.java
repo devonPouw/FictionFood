@@ -63,9 +63,10 @@ public class RecipeController {
             List<RecipeListDto> recipeDtos = new ArrayList<>();
 
             for (Recipe recipe : recipes) {
-                byte[] imageData = imageService.downloadRecipeImage(recipe.getImage().getName());
+                byte[] imageData = imageService.downloadImage(recipe.getImage().getName());
 
                 recipeDtos.add(RecipeListDto.builder()
+                        .id(recipe.getId())
                         .title(recipe.getTitle())
                         .summary(recipe.getSummary())
                         .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
