@@ -8,8 +8,8 @@ const get = (id: number) => {
     return http.get<IRecipeData>(`/recipes/${id}`);
   };
   
-  const create = (data: IRecipeData) => {
-    return http.post<IRecipeData>("/recipes", data);
+  const getImage = (id: number) => {
+    return http.get<any>(`/images/${id}`);
   };
   
   const update = (id: number, data: IRecipeData) => {
@@ -26,7 +26,7 @@ const get = (id: number) => {
   const RecipeDataService = {
     getAll,
     get,
-    create,
+    getImage,
     update,
     remove,
     findByTitle,
