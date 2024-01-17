@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Page<Recipe> findByIsPublished(@NonNull Boolean isPublished, Pageable pageable);
-
     Optional<Recipe> findByIdAndIsPublished(@NonNull Long id, @NonNull Boolean isPublished);
-
     Long countByAuthorAndDatePublishedAfter(@NonNull User author, @NonNull LocalDateTime oneMonthAgo);
 }

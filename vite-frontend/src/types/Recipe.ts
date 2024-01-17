@@ -1,17 +1,26 @@
-import { IUser } from "./User"
 
 export interface IRecipeData {
     id: number | null,
     title: string,
     summary: string,
+    categories: string[],
+    rating: number,
+    author: string,
+    datePublished: string
+    image: number[]
+}
+export interface IPostRecipeData {
+    id: number | null,
+    title: string,
+    summary: string,
     content: string,
     recipeIngredients: IRecipeIngredientData[],
-    categories: ICategoryData[],
+    categories: string[],
     isPublished: boolean,
     rating: number,
-    author: IUser,
+    author: string,
     datePublished: string
-    image: IImageData
+    image: number[]
 }
 export interface IRecipeIngredientData {
     id: number | null,
@@ -25,10 +34,6 @@ export interface IRecipeList {
     currentPage: number,
     totalItems: number,
     totalPages: number
-}
-export interface ICategoryData {
-    id: number | null,
-    name: string
 }
 export interface IImageData{
     id: number | null,

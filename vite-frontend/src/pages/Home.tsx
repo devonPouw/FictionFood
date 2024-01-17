@@ -19,7 +19,7 @@ export default function Home() {
       try {
         const response = await RecipeDataService.getAll(0, 9);
         setRecipeList(response.data);
-        console.table(response.data.recipes)
+        console.table(response.data)
       } catch (error) {
         console.log(error);
       }

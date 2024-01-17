@@ -15,7 +15,7 @@ const RecipePreview: React.FC<RecipeProps> = ({ recipeList }) => {
                 <div><span>{recipe.title}</span></div>
                 <div>{recipe.rating}</div>
                 <div>{recipe.summary}</div>
-                <div>{recipe.author.nickname}</div>
+                <div>{recipe.author}</div>
                 <div>{recipe.datePublished}</div>
                 <div>{recipe.categories.map((category) => (
                   <div key={category.id}>{category.name}</div>
