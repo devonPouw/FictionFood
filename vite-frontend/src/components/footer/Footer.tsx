@@ -1,7 +1,7 @@
 
 export default function Footer() {
   return (
-    <div className='absolute inset-x-0 bottom-0 w-full justify-between border-t border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:w-screen lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30'>
+    <div className='relative inset-x-0 bottom-0 w-full justify-between border-t border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:w-screen lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30'>
         <div className="flex">
         <div className='container flex h-14 items-center'>
           <span className='font-serif text-xs'>Made by devonPouw</span>
