@@ -1,29 +1,25 @@
 import { IRecipeList } from "@/types/Recipe";
 import { useState, useEffect } from "react";
 
-interface RecipeProps {
+interface RecipePreviewProps {
   recipeList: IRecipeList;
 }
 
-const RecipePreview: React.FC<RecipeProps> = ({ recipeList }) => {
+const RecipePreview: React.FC<RecipePreviewProps> = ({ recipeList }) => {
   const { recipes } = recipeList;
-  const [imageSrcList, setImageSrcList] = useState<Record<string, string>>({});
+  const [imageSrcList, setImageSrcList] = useState<Record<string, string>>();
 
   useEffect(() => {
     const fetchImages = async () => {
       if (recipes) {
-        const promises = recipes.map(async (recipe) => {
-          if (recipe.imageData) {
-            const blob = new Blob([recipe.imageData], { type: 'image/jpeg' });
-            const base64String = await getBase64FromBlob(blob);
-            return { [recipe.title]: base64String };
-          }
-          return {};
-        });
+        const newImageSrcList: Record<string, string> = {};
 
-        const imageSrcArray = await Promise.all(promises);
-        const newImageSrcList: Record<string, string> = Object.assign({}, ...imageSrcArray);
-        
+        for (const recipe of recipes) {
+          if (recipe.imageData) {
+            newImageSrcList[recipe.title] = `data:image/jpeg;base64,${recipe.imageData}`;
+          }
+        }
+
         console.table(newImageSrcList);
         setImageSrcList(newImageSrcList);
       }
@@ -31,38 +27,27 @@ const RecipePreview: React.FC<RecipeProps> = ({ recipeList }) => {
 
     fetchImages();
   }, [recipes]);
-
-  const getBase64FromBlob = (blob: Blob): Promise<string> => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result) {
-          resolve(reader.result as string);
-        }
-      };
-      reader.readAsDataURL(blob);
-    });
-  };
-
-  return !recipes ? (
+  return !imageSrcList ? (
     <div>loading...</div>
   ) : (
     <div className="flex flex-row pt-10 px-10">
       {recipes.map((recipe) => (
-        <div className="w-1/4 h-20" key={recipe.title}>
+        <div className="w-1/4 h-1/4" key={recipe.title}>
           <div>
-            <span>{recipe.title}</span>
+            <span className="flex text-xl font-semibold justify-center">{recipe.title}</span>
           </div>
-          <div>{recipe.rating}</div>
-          <img src={imageSrcList[recipe.title]} alt="" />
-          <div>{recipe.summary}</div>
-          <div>{recipe.author}</div>
-          <div>{recipe.datePublished}</div>
-          <div>
+          <div className="flex justify-end">
             {recipe.categories.map((category) => (
-              <div key={category}>{category}</div>
+              <div className="bg-slate-400 rounded-lg p-1 m-2 text-sm" key={category}>{category}</div>
             ))}
           </div>
+          <div>{recipe.rating}</div>
+          <img className="h-auto w-full" src={imageSrcList[recipe.title]} alt="" />
+          <div>{recipe.summary}</div>
+          
+          <div>{recipe.datePublished}</div>
+          
+          <div>{recipe.author}</div>
         </div>
       ))}
     </div>

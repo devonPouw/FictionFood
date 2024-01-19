@@ -26,10 +26,8 @@ const Login:React.FC = () => {
       if(token)
       logout(token).then(() => {
         try{
-          console.log(token)
         localStorage.removeItem("token");
         navigate("/")
-        console.log("Logout succesful")
         }
         catch{
           throw Error;
