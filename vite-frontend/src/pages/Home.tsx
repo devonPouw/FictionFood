@@ -1,7 +1,7 @@
 import Footer from "@/components/footer/Footer";
 import NavBar from "@/components/header/NavBar";
 import RecipePreview from "@/components/recipe/RecipePreview";
-import RecipeDataService from "@/services/recipe/RecipeService";
+import { backendApi } from "@/services/ApiMappings";
 import { IRecipeList } from "@/types/Recipe";
 import { useEffect, useState } from "react";
 
@@ -17,7 +17,7 @@ export default function Home() {
 
     const fetchRecipePreview = async () => {
       try {
-        const response = await RecipeDataService.getAll(0, 9);
+        const response = await backendApi.getAllRecipes(0, 9);
         setRecipeList(response.data);
       } catch (error) {
         console.log(error);

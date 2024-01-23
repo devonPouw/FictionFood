@@ -13,40 +13,34 @@ import {
       FormMessage,
     } from "@/components/ui/form"
      import { Input } from "@/components/ui/input"
-import { login } from "@/services/auth/auth.service"; 
 import { useState } from "react";
-import { useAuth } from "@/services/auth/auth-context";
+import { useAuth } from "@/services/auth/AuthContext";
+import { backendApi } from "@/services/ApiMappings";
 
 const Login: React.FC= () => {
   const navigate: NavigateFunction = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-  const { setToken } = useAuth();
+  const Auth = useAuth();
   
-  const handleLogin = (formValue: { username: string; password: string }) => {
+  const handleLogin = async (formValue: { username: string; password: string }) => {
     const { username, password } = formValue;
-    
     setMessage("");
     setLoading(true);
+    try {
+      const response = await backendApi.login(username, password);
+      const  accessToken  = response.data.accessToken;
+      console.table(response.data)
 
-    login(username, password).then(
-      (response) => {
-        setToken(response.accessToken)
-        navigate("/");
-      },
-      (error) => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-
-        setLoading(false);
-        setMessage(resMessage);
-      }
-    );
+      Auth.userLogin(accessToken);
+      setLoading(false);
+      navigate("/");
+      setMessage(response.data.message);
+    }
+      catch (error) {
+      console.log(error)
+    }
   };
 
   const formSchema = z.object({

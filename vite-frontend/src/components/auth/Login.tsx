@@ -1,5 +1,4 @@
-import { useAuth } from '@/services/auth/auth-context';
-import { logout, parseJwt } from '@/services/auth/auth.service';
+import { useAuth } from '@/services/auth/AuthContext';
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom'
 import {
   DropdownMenu,
@@ -16,37 +15,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { backendApi } from '@/services/ApiMappings';
 
 const Login:React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
-  const { token } = useAuth();
-    const data = parseJwt(token)
+  const { user } = useAuth();
+    const Auth = useAuth();
     
-    const handleLogout = () => {
-      if(token)
-      logout(token).then(() => {
-        try{
-        localStorage.removeItem("token");
-        navigate("/")
-        }
-        catch{
-          throw Error;
-        }
-      })
+    const handleLogout = async () => {
+      try {
+        if(user)
+      backendApi.logout(user.accessToken);
+      
+        Auth.userLogout();
+        navigate("/");
+    } catch(error){
+      console.log(error)
     }
-
+  }
     return(
        <>
-    {token ? (
+    {user ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
       <Avatar>
       <AvatarImage className='hover:cursor-pointer' src="https://github.com/shadcn.png" alt="@shadcn" />
-      <AvatarFallback>{data.sub.substring(0, 1)}</AvatarFallback>
+      <AvatarFallback>{user.nickname.substring(0, 1)}</AvatarFallback>
     </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>{data.sub}</DropdownMenuLabel>
+        <DropdownMenuLabel>{user.nickname}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={ () => navigate("/profile")}>
@@ -89,4 +87,5 @@ const Login:React.FC = () => {
           </div>)}
     </>)
 }
+
 export default Login

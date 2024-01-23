@@ -5,10 +5,11 @@ import * as z from "zod"
 import { useState } from "react";
 
 import { IRegisterData } from "@/types/User";
-import { register } from "@/services/auth/auth.service";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
+import { backendApi } from "@/services/ApiMappings";
+import { useAuth } from "@/services/auth/AuthContext";
 
 const Register: React.FC = () => {
     const navigate: NavigateFunction = useNavigate();
@@ -16,6 +17,7 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [successful, setSuccessful] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const Auth = useAuth();
 
   const formSchema = z.object({
     role: z.string(),
@@ -51,29 +53,27 @@ const Register: React.FC = () => {
     },
   })
 
-const handleRegister = (formValue: IRegisterData) => {
+  const handleRegister = async (formValue: IRegisterData) => {
     const {role, nickname, username, email,  password } = formValue;
+    setMessage("");
+    setLoading(true);
+    backendApi.register(role, nickname, username, email, password);
+    try {
+      const response = await backendApi.register(role, nickname, username, email, password);
+      const { accessToken } = response.data;
 
-    register(role, nickname, username, email, password).then(
-      (response) => {
-        setMessage(response.data.message);
+      Auth.userLogin(accessToken);
         setSuccessful(true);
-        navigate("/login");
+        navigate("/");
         window.location.reload();
-      },
-      (error) => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-
+        setMessage(response.data.message);
+    }
+      catch (error) {
         setLoading(false);
-        setMessage(resMessage);
+        
         setSuccessful(false);
-      }
-    );
+      console.log(error)
+    }
   };
   return( 
     <div className="w-screen h-screen flex">
@@ -156,7 +156,6 @@ const handleRegister = (formValue: IRegisterData) => {
           </div>
           </div>
         </form>
-      
         )}
        </Form>
       </div>
