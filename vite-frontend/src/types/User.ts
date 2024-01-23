@@ -1,8 +1,9 @@
+import { AccountType } from "@/services/Paths";
+
 export interface IUser {
-    role: string;
+    role: AccountType;
     nickname: string;
-    username: string;
-    email: string;
+    accessToken: string;
 }
 export interface IRegisterData {
     role: string;
