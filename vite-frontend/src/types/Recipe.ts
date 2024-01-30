@@ -10,17 +10,20 @@ export interface IRecipeData {
     imageData: Uint8Array
 }
 export interface IPostRecipeData {
-    title: string,
-    summary: string,
-    content: string,
-    recipeIngredients: IRecipeIngredientData[],
-    categories: string[],
-    isPublished: boolean,
-    author: string,
-    imageData: number[]
-}
+    title: string;
+    summary: string;
+    content: string;
+    recipeIngredients: {
+      name: string;
+      ingredient: string;
+      quantity: number;
+      unit: "KILOGRAM" | "GRAM" | "LITRE" | "CENTILITRE" | "MILLILITRE" | "TABLESPOON" | "TEASPOON" | "PIECE";
+    }[];
+    categories: string[];
+    isPublished: boolean;
+    image?: File;
+  }
 export interface IRecipeIngredientData {
-    id: number | null,
     name: string,
     ingredient: string,
     quantity: number,

@@ -1,9 +1,11 @@
 import { AccountType } from "@/services/Paths";
 
 export interface IUser {
-    role: AccountType;
-    nickname: string;
-    accessToken: string;
+    sub: string,
+    role: AccountType,
+    nickname: string,
+    iat: number,
+    exp: number,
 }
 export interface IRegisterData {
     role: string;
@@ -13,6 +15,6 @@ export interface IRegisterData {
     password: string;
 }
 export interface ILoginData {
-    username: string;
-    password: string;
+    username: string,
+    password: string,
 }

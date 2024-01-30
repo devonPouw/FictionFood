@@ -1,4 +1,4 @@
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -21,24 +21,17 @@ const Register: React.FC = () => {
 
   const formSchema = z.object({
     role: z.string(),
-    nickname: z.string().min(3, {
+    nickname: z.string().min(3).max(15, {
         message: "Must be between 3 and 15 characters long"
-    }).max(15, {
-        message: "Must be between 3 and 15 characters long",
-      }),
-      username: z.string().min(3, {
+    }),
+      username: z.string().min(3).max(15, {
         message: "Must be between 3 and 15 characters long"
-    }).max(15, {
-        message: "Must be between 3 and 15 characters long",
-      }),
+    }),
     email: z.string().email({
          message: "Invalid email address" 
         }),
-    password: z.string().min(8, {
-        message: "Must be atleast 8 characters long"
-    })
-    .max(24, {
-      message: "Not more than 24 characters allowed.",
+    password: z.string().min(8).max(24, {
+        message: "Must be between 8 and 24 characters long"
     }),
   }).required();
 
@@ -57,7 +50,6 @@ const Register: React.FC = () => {
     const {role, nickname, username, email,  password } = formValue;
     setMessage("");
     setLoading(true);
-    backendApi.register(role, nickname, username, email, password);
     try {
       const response = await backendApi.register(role, nickname, username, email, password);
       const { accessToken } = response.data;
@@ -76,8 +68,14 @@ const Register: React.FC = () => {
     }
   };
   return( 
-    <div className="w-screen h-screen flex">
-    <div className="container place-self-center">
+    <div className="w-screen h-screen flex flex-col">
+    <div className="container h-1/4">
+      <div className='flex h-1/2 items-center justify-center text-4xl'>
+        <Link to={"/"}>
+          <span className='font-bold hover:text-muted-foreground'><span className='font-serif font-semibold'>F</span>iction<span className='font-serif font-semibold'>f</span>ood</span>
+          </Link>
+        </div>
+        </div>
     <div className="container">
       <Form {...form}>
    {!successful && (
@@ -143,7 +141,7 @@ const Register: React.FC = () => {
           <div>
           <Button className="w-32 md:24 border-2" type="submit" disabled={form.control._defaultValues.nickname === form.getValues().nickname 
             || form.control._defaultValues.email === form.getValues().email || form.control._defaultValues.username === form.getValues().username 
-            || form.control._defaultValues.password === form.getValues().password}>Submit</Button>
+            || form.control._defaultValues.password === form.getValues().password}>Register</Button>
             {loading && (
                 <span className="spinner-border spinner-border-sm"></span>
               )}
@@ -158,7 +156,6 @@ const Register: React.FC = () => {
         </form>
         )}
        </Form>
-      </div>
       </div>
       </div>
   )
