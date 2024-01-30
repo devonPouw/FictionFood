@@ -30,7 +30,6 @@ public class Recipe {
     @NonNull
     private String title;
 
-    @Column(columnDefinition = "CLOB")
     private String summary;
 
     @NonNull

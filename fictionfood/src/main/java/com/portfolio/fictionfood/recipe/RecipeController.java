@@ -90,10 +90,8 @@ public class RecipeController {
         }
     }
 
-    //    @JsonView(RecipeViews.GetRecipeList.class)
     @PostMapping
     public ResponseEntity<?> postRecipe(@Validated @RequestBody PostRecipeDto recipeDto,
-                                        @RequestParam("image") MultipartFile image,
                                         @AuthenticationPrincipal User currentUser) {
         if (!checkIfAllowedToPost(currentUser)) {
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
@@ -126,10 +124,9 @@ public class RecipeController {
                         return recipeIngredient;
                     })
                     .collect(Collectors.toSet())));
-            String uploadImage = imageService.uploadRecipeImage(image, recipe);
-            recipe.setImage((RecipeImage) imageRepository.findByName(recipeDto.getImageName()).orElseThrow());
-            recipeRepository.save(recipe);
-            return new ResponseEntity<>(uploadImage, HttpStatus.CREATED);
+            String uploadImage = imageService.uploadRecipeImage(recipeDto.getImage(), recipe);
+            recipe.setImage((RecipeImage) imageRepository.findByName(uploadImage).orElseThrow());
+            return new ResponseEntity<>(recipeRepository.save(recipe), HttpStatus.CREATED);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
