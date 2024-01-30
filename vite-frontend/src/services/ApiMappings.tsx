@@ -1,4 +1,4 @@
-import { IRecipeData, IRecipeList } from "@/types/Recipe";
+import { IPostRecipeData, IRecipeData, IRecipeList } from "@/types/Recipe";
 import axios from "axios";
 
 export const backendApi = {
@@ -7,11 +7,12 @@ export const backendApi = {
     logout,
     getAllRecipes,
     getRecipeById,
+    postRecipe,
   };
 
-function register(role: string, nickname: string, username: string, email: string, password: string) {
+function register(role: string, nickname: string, username: string, email: string, password: string ) {
   return http.post("/auth/register", {
-      role,
+      role, 
       nickname,
       username,
       email,
@@ -21,7 +22,7 @@ function register(role: string, nickname: string, username: string, email: strin
  
  function login (username: string, password: string) {
    return http.post("/auth/login", {
-        username,
+        username, 
         password,
       });
     }
@@ -41,6 +42,13 @@ function register(role: string, nickname: string, username: string, email: strin
 
 function getRecipeById (id: number) {
     return http.get<IRecipeData>(`/recipes/${id}`);
+  }
+
+  function postRecipe (formData: IPostRecipeData, token: string) {
+    return http.post("/recipes", formData, {
+    headers: {
+      Authorization: bearer(token),
+    },});
   }
 
 
@@ -87,4 +95,7 @@ export function parseJwt(token: string) {
       console.error("Error parsing JWT:", error);
       return null;
     }
+  }
+  function bearer(token: string) {
+    return `Bearer ${token}`;
   }

@@ -21,12 +21,12 @@ const Login:React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { user } = useAuth();
     const Auth = useAuth();
+    const {getUser} = useAuth();
     
     const handleLogout = async () => {
       try {
-        if(user)
-      backendApi.logout(user.accessToken);
-      
+       const response = await backendApi.logout(getUser());
+       console.log(response)
         Auth.userLogout();
         navigate("/");
     } catch(error){
@@ -73,7 +73,7 @@ const Login:React.FC = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>API</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={ () => handleLogout()}>
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>

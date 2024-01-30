@@ -16,6 +16,7 @@ import {
 import { useState } from "react";
 import { useAuth } from "@/services/auth/AuthContext";
 import { backendApi } from "@/services/ApiMappings";
+import { ILoginData } from "@/types/User";
 
 const Login: React.FC= () => {
   const navigate: NavigateFunction = useNavigate();
@@ -24,7 +25,7 @@ const Login: React.FC= () => {
   const [message, setMessage] = useState<string>("");
   const Auth = useAuth();
   
-  const handleLogin = async (formValue: { username: string; password: string }) => {
+  const handleLogin = async (formValue: ILoginData) => {
     const { username, password } = formValue;
     setMessage("");
     setLoading(true);
@@ -44,11 +45,11 @@ const Login: React.FC= () => {
   };
 
   const formSchema = z.object({
-    username: z.string().max(24, {
-      message: "Not more than 24 characters allowed.",
+    username: z.string().max(15, {
+      message: "Usernames are not longer than 15 characters",
     }),
     password: z.string().max(24, {
-      message: "Not more than 24 characters allowed.",
+      message: "Passwords are not longer than 24 characters",
     }),
   }).required();
 
@@ -61,8 +62,15 @@ const Login: React.FC= () => {
   })
 
   return (
-    <div className="w-screen h-screen flex">
-    <div className="container place-self-center">
+    <div className="w-screen h-screen flex flex-col">
+      <div className="container h-1/3">
+      <div className='flex h-1/2 items-center justify-center text-4xl'>
+        <Link to={"/"}>
+          <span className='font-bold hover:text-muted-foreground'><span className='font-serif font-semibold'>F</span>iction<span className='font-serif font-semibold'>f</span>ood</span>
+          </Link>
+        </div>
+        </div>
+    <div className="container">
       <div className="container">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-8">
@@ -99,7 +107,7 @@ const Login: React.FC= () => {
               <div>
             <div>
             <Button className="w-32 md:24 border-2" type="submit" disabled={form.control._defaultValues.username === form.getValues().username 
-              || form.control._defaultValues.password === form.getValues().password}>Submit</Button>
+              || form.control._defaultValues.password === form.getValues().password}>Login</Button>
               {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}

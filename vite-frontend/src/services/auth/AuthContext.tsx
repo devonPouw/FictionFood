@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { AccountType, accountType } from "@/services/Paths";
 import { IUser } from "@/types/User";
 import { parseJwt } from "../ApiMappings";
@@ -9,9 +15,10 @@ interface AuthContextProps {
   userLogin: (token: string) => void;
   userLogout: () => void;
   getAccountType: () => AccountType;
+  getUser: () => string;
 }
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+const AuthContext = createContext<AuthContextProps | null>(null);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -26,6 +33,7 @@ function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     if (storedToken) {
       try {
         const decodedToken = parseJwt(storedToken);
+        console.log(decodedToken);
         setUser(decodedToken);
       } catch (error) {
         console.error("Invalid token:", error);
@@ -54,12 +62,17 @@ function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     return user ? user.role : accountType.VISITOR;
   };
 
+  const getUser = () => {
+    return sessionStorage.getItem("token");
+  };
+
   const contextValue: AuthContextProps = {
     user,
     userIsAuthenticated,
     userLogin,
     userLogout,
     getAccountType,
+    getUser,
   };
 
   return (
