@@ -32,6 +32,5 @@ public class RecipeIngredient {
     @JsonBackReference
     private Recipe recipe;
 
-    @Enumerated(EnumType.STRING)
-    private Unit unit;
+    private String unit;
 }

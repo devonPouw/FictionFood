@@ -2,7 +2,6 @@ package com.portfolio.fictionfood;
 
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.category.CategoryRepository;
-import com.portfolio.fictionfood.image.Image;
 import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
 import com.portfolio.fictionfood.ingredient.Ingredient;
@@ -11,7 +10,6 @@ import com.portfolio.fictionfood.recipe.Recipe;
 import com.portfolio.fictionfood.recipe.RecipeRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredientRepository;
-import com.portfolio.fictionfood.recipeingredient.Unit;
 import com.portfolio.fictionfood.user.User;
 import com.portfolio.fictionfood.user.UserRepository;
 import com.portfolio.fictionfood.user.UserRole;
@@ -112,77 +110,77 @@ public class Seeder implements CommandLineRunner {
         var recipeIngredient = RecipeIngredient.builder()
                 .ingredient(ingredient)
                 .quantity(500D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe)
                 .build();
 
         var recipeIngredient1 = RecipeIngredient.builder()
                 .ingredient(ingredient1)
                 .quantity(2D)
-                .unit(Unit.PIECE)
+                .unit("piece")
                 .recipe(recipe)
                 .build();
 
         var recipeIngredient2 = RecipeIngredient.builder()
                 .ingredient(ingredient2)
                 .quantity(300D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe1)
                 .build();
 
         var recipeIngredient3 = RecipeIngredient.builder()
                 .ingredient(ingredient3)
                 .quantity(100D)
-                .unit(Unit.MILLILITRE)
+                .unit("millilitre")
                 .recipe(recipe1)
                 .build();
 
         var recipeIngredient4 = RecipeIngredient.builder()
                 .ingredient(ingredient4)
                 .quantity(150D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe2)
                 .build();
 
         var recipeIngredient5 = RecipeIngredient.builder()
                 .ingredient(ingredient5)
                 .quantity(100D)
-                .unit(Unit.MILLILITRE)
+                .unit("millilitre")
                 .recipe(recipe2)
                 .build();
 
         var recipeIngredient6 = RecipeIngredient.builder()
                 .ingredient(ingredient6)
                 .quantity(400D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe3)
                 .build();
 
         var recipeIngredient7 = RecipeIngredient.builder()
                 .ingredient(ingredient7)
                 .quantity(50D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe3)
                 .build();
 
         var recipeIngredient8 = RecipeIngredient.builder()
                 .ingredient(ingredient8)
                 .quantity(300D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe3)
                 .build();
 
         var recipeIngredient9 = RecipeIngredient.builder()
                 .ingredient(ingredient9)
                 .quantity(2D)
-                .unit(Unit.TABLESPOON)
+                .unit("tablespoon")
                 .recipe(recipe3)
                 .build();
 
         var recipeIngredient10 = RecipeIngredient.builder()
                 .ingredient(ingredient10)
                 .quantity(150D)
-                .unit(Unit.GRAM)
+                .unit("gram")
                 .recipe(recipe3)
                 .build();
 
