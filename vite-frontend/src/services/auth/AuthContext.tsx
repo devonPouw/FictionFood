@@ -1,9 +1,10 @@
-import {
+import React, {
   createContext,
   useContext,
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import { AccountType, accountType } from "@/services/Paths";
 import { IUser } from "@/types/User";
@@ -15,7 +16,7 @@ interface AuthContextProps {
   userLogin: (token: string) => void;
   userLogout: () => void;
   getAccountType: () => AccountType;
-  getUser: () => string;
+  getToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextProps | null>(null);
@@ -24,47 +25,53 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-function AuthProvider({ children }: AuthProviderProps): JSX.Element {
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
 
-  useEffect(() => {
-    const storedToken = sessionStorage.getItem("token");
-
-    if (storedToken) {
-      try {
-        const decodedToken = parseJwt(storedToken);
+  const loginUserWithToken = useCallback((token: string) => {
+    try {
+      const decodedToken = parseJwt(token);
+      if (decodedToken && typeof decodedToken === "object") {
         console.log(decodedToken);
-        setUser(decodedToken);
-      } catch (error) {
-        console.error("Invalid token:", error);
-        userLogout();
+
+        const user = decodedToken as IUser;
+        setUser(user);
+      } else {
+        throw new Error("Decoded token is not an object.");
       }
+    } catch (error) {
+      console.error("Invalid token or error parsing JWT:", error);
+      userLogout();
     }
   }, []);
 
-  const userIsAuthenticated = () => {
-    return !!user;
-  };
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem("token");
+    if (storedToken) {
+      loginUserWithToken(storedToken);
+    }
+    const storedUser = sessionStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, [loginUserWithToken]);
 
-  const userLogin = (token: string) => {
+  const userIsAuthenticated = (): boolean => !!user;
+
+  const userLogin = (token: string): void => {
     sessionStorage.setItem("token", token);
-    const decodedToken = parseJwt(token);
-    console.log(decodedToken);
-    setUser(decodedToken);
+    loginUserWithToken(token);
   };
 
-  const userLogout = () => {
+  const userLogout = (): void => {
     sessionStorage.removeItem("token");
     setUser(null);
   };
 
-  const getAccountType = (): AccountType => {
-    return user ? user.role : accountType.VISITOR;
-  };
+  const getAccountType = (): AccountType =>
+    user ? user.role : accountType.VISITOR;
 
-  const getUser = () => {
-    return sessionStorage.getItem("token");
-  };
+  const getToken = (): string | null => sessionStorage.getItem("token");
 
   const contextValue: AuthContextProps = {
     user,
@@ -72,13 +79,13 @@ function AuthProvider({ children }: AuthProviderProps): JSX.Element {
     userLogin,
     userLogout,
     getAccountType,
-    getUser,
+    getToken,
   };
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
-}
+};
 
 export default AuthContext;
 
