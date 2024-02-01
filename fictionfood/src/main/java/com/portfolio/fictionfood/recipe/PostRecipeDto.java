@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,7 +17,7 @@ public class PostRecipeDto {
     private String title;
     private String summary;
     private String content;
-    private RecipeIngredientDto[] recipeIngredients;
+    private List<RecipeIngredientDto> recipeIngredients;
     private String[] categories;
     private Boolean isPublished;
     private MultipartFile image;

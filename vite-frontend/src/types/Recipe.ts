@@ -13,21 +13,15 @@ export interface IPostRecipeData {
     title: string;
     summary: string;
     content: string;
-    recipeIngredients: {
-      name: string;
-      ingredient: string;
-      quantity: number;
-      unit: "KILOGRAM" | "GRAM" | "LITRE" | "CENTILITRE" | "MILLILITRE" | "TABLESPOON" | "TEASPOON" | "PIECE";
-    }[];
+    recipeIngredients: IRecipeIngredientData[];
     categories: string[];
     isPublished: boolean;
     image?: File;
   }
 export interface IRecipeIngredientData {
-    name: string,
     ingredient: string,
-    quantity: number,
-    unit: string
+    quantity: string,
+    unit: string;
 }
 export interface IRecipeList {
     recipes: IRecipeData[],

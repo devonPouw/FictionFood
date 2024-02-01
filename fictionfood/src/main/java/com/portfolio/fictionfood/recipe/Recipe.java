@@ -27,12 +27,12 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @NonNull
+    //    @NonNull
     private String title;
 
     private String summary;
 
-    @NonNull
+    //    @NonNull
     @Column(columnDefinition = "CLOB")
     private String content;
 

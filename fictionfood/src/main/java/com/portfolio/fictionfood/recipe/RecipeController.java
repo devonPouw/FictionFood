@@ -1,9 +1,11 @@
 package com.portfolio.fictionfood.recipe;
 
+import com.portfolio.fictionfood.authentication.token.TokenRepository;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
 import com.portfolio.fictionfood.image.RecipeImage;
+import com.portfolio.fictionfood.ingredient.Ingredient;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.user.User;
@@ -17,9 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -36,6 +36,7 @@ public class RecipeController {
     private final IngredientRepository ingredientRepository;
     private final ImageService imageService;
     private final ImageRepository imageRepository;
+    private final TokenRepository tokenRepository;
     @Value("${app.recipe-rules.max-per-month}")
     int maxRecipesPerMonth;
     @Autowired
@@ -91,8 +92,8 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<?> postRecipe(@Validated @RequestBody PostRecipeDto recipeDto,
-                                        @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<Recipe> postRecipe(@ModelAttribute PostRecipeDto recipeDto,
+                                             @AuthenticationPrincipal User currentUser) {
         if (!checkIfAllowedToPost(currentUser)) {
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
@@ -114,16 +115,27 @@ public class RecipeController {
                         return category;
                     })
                     .collect(Collectors.toSet())));
-            recipe.setRecipeIngredients(new HashSet<>(Arrays.stream(recipeDto.getRecipeIngredients())
+            recipe.setRecipeIngredients(recipeDto.getRecipeIngredients()
+                    .stream()
                     .map(recipeIngredientDto -> {
                         RecipeIngredient recipeIngredient = new RecipeIngredient();
                         recipeIngredient.setRecipe(recipe);
-                        recipeIngredient.setIngredient(ingredientRepository.findByNameIgnoringCase(recipeIngredientDto.getName()).orElseThrow());
+
+                        Ingredient ingredient = ingredientRepository.findByNameIgnoringCase(recipeIngredientDto.getIngredient())
+                                .orElseGet(() -> {
+                                    Ingredient newIngredient = new Ingredient();
+                                    newIngredient.setName(recipeIngredientDto.getIngredient());
+                                    ingredientRepository.save(newIngredient);
+                                    return newIngredient;
+                                });
+
+                        recipeIngredient.setIngredient(ingredient);
                         recipeIngredient.setQuantity(recipeIngredientDto.getQuantity());
                         recipeIngredient.setUnit(recipeIngredientDto.getUnit());
+
                         return recipeIngredient;
                     })
-                    .collect(Collectors.toSet())));
+                    .collect(Collectors.toCollection(HashSet::new)));
             String uploadImage = imageService.uploadRecipeImage(recipeDto.getImage(), recipe);
             recipe.setImage((RecipeImage) imageRepository.findByName(uploadImage).orElseThrow());
             return new ResponseEntity<>(recipeRepository.save(recipe), HttpStatus.CREATED);

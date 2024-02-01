@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import * as z from "zod";
 import { backendApi } from "@/services/ApiMappings";
 import { useAuth } from "@/services/auth/AuthContext";
-import { IPostRecipeData } from "@/types/Recipe";
+import { IPostRecipeData, IRecipeIngredientData } from "@/types/Recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,6 +20,14 @@ import { Textarea } from "../ui/textarea";
 import { Switch } from "../ui/switch";
 import { Button } from "../ui/button";
 import NavBar from "../header/NavBar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+} from "../ui/select";
+import { SelectTrigger, SelectValue } from "@radix-ui/react-select";
 
 const unitEnum = z.enum([
   "KILOGRAM",
@@ -49,19 +57,16 @@ const formSchema = z.object({
     .min(1, { message: "Summary is required" })
     .max(500, { message: "Summary must be under 500 characters" }),
   content: z.string().min(1, { message: "Content is required" }),
-  recipeIngredients: z
-    .array(
-      z.object({
-        name: z.string(),
-        ingredient: z.string(),
-        quantity: z.number(),
-        unit: unitEnum,
-      })
-    )
-    .nonempty({ message: "At least one ingredient is required" }),
-  categories: z
-    .array(z.string())
-    .nonempty({ message: "At least one category is required" }),
+  recipeIngredients: z.array(
+    z.object({
+      ingredient: z.string().min(1, { message: "Ingredient is required" }),
+      quantity: z.string(),
+      unit: z.string(),
+    })
+  ),
+  // .nonempty({ message: "At least one ingredient is required" })
+  categories: z.array(z.string()),
+  // .nonempty({ message: "At least one category is required" })
   isPublished: z.boolean(),
   image: z
     .any()
@@ -77,7 +82,13 @@ const AddRecipe: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
-  const { getUser } = useAuth();
+  const [newIngredient, setNewIngredient] = useState<IRecipeIngredientData>({
+    ingredient: "",
+    quantity: "",
+    unit: "GRAM",
+  });
+  const [newCategory, setNewCategory] = useState<string>("");
+  const { getToken } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -92,17 +103,47 @@ const AddRecipe: React.FC = () => {
     },
   });
 
-  const {
-    fields: recipeIngredientsFields,
-    append,
-    remove,
-  } = useFieldArray({
-    name: "recipeIngredients",
-    control: form.control,
-  });
-
   const onDrop = (acceptedFiles: File[]) => {
     form.setValue("image", acceptedFiles[0]);
+  };
+
+  const addIngredient = () => {
+    if (!newIngredient.ingredient.trim()) return;
+
+    const parsedQuantity = parseFloat(newIngredient.quantity);
+    const quantity = isNaN(parsedQuantity) ? 0 : parsedQuantity;
+
+    const ingredientList = form.getValues("recipeIngredients");
+    form.setValue("recipeIngredients", [
+      ...ingredientList,
+      { ...newIngredient, quantity: quantity.toString() },
+    ]);
+
+    setNewIngredient({ ingredient: "", quantity: "", unit: "GRAM" });
+  };
+
+  const removeIngredientAtIndex = (index: number) => {
+    const updatedIngredients = form
+      .getValues("recipeIngredients")
+      .filter((_, i) => i !== index);
+    form.setValue("recipeIngredients", updatedIngredients);
+  };
+
+  const addCategory = () => {
+    if (!newCategory.trim()) return;
+    const currentCategories = form.getValues("categories");
+    form.setValue("categories", [...currentCategories, newCategory.trim()], {
+      shouldValidate: true,
+    });
+
+    setNewCategory("");
+  };
+
+  const removeCategoryAtIndex = (index: number) => {
+    const updatedCategories = form
+      .getValues("categories")
+      .filter((_, i) => i !== index);
+    form.setValue("categories", updatedCategories);
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -127,20 +168,27 @@ const AddRecipe: React.FC = () => {
     } = formValue;
     setMessage("");
     setLoading(true);
-    try {
-      const response = await backendApi.postRecipe(
-        {
-          title,
-          summary,
-          content,
-          recipeIngredients,
-          categories,
-          isPublished,
-          image,
-        },
-        getUser()
-      );
 
+    const token = getToken();
+    if (token === null) {
+      navigate("/login");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      console.log(formValue);
+      const response = await backendApi.postRecipe(
+        title,
+        summary,
+        content,
+        recipeIngredients,
+        categories,
+        isPublished,
+        image,
+        token
+      );
+      console.log(response);
       setLoading(false);
       navigate("/");
       setMessage(response.statusText);
@@ -172,6 +220,40 @@ const AddRecipe: React.FC = () => {
                   </FormItem>
                 )}
               />
+              <FormItem>
+                {form.getValues().categories.map((category, index) => (
+                  <Button
+                    key={index}
+                    onClick={() => removeCategoryAtIndex(index)}
+                  >
+                    {category}
+                  </Button>
+                ))}
+              </FormItem>
+              <FormField
+                control={form.control}
+                name="categories"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Category"
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                      />
+                    </FormControl>
+                    <FormMessage autoCorrect="false" />
+                  </FormItem>
+                )}
+              />
+              <Button
+                className="justify-self-end"
+                type="button"
+                onClick={() => addCategory()}
+              >
+                Add Category
+              </Button>
               <FormField
                 control={form.control}
                 name="summary"
@@ -198,6 +280,19 @@ const AddRecipe: React.FC = () => {
                   </FormItem>
                 )}
               />
+              <FormItem>
+                {form
+                  .getValues()
+                  .recipeIngredients.map((recipeIngredient, index) => (
+                    <Button
+                      key={index}
+                      onClick={() => removeIngredientAtIndex(index)}
+                    >
+                      {recipeIngredient.ingredient}, {recipeIngredient.quantity}{" "}
+                      {recipeIngredient.unit}
+                    </Button>
+                  ))}
+              </FormItem>
               <FormField
                 control={form.control}
                 name="recipeIngredients"
@@ -206,57 +301,58 @@ const AddRecipe: React.FC = () => {
                     <FormLabel>Add an ingredient</FormLabel>
                     <FormControl>
                       <div>
-                        <label>Recipe Ingredients</label>
-                        {recipeIngredientsFields.map((item, index) => (
-                          <div key={item.id}>
-                            <input
-                              {...form.register(
-                                `recipeIngredients.${index}.name`
-                              )}
-                              placeholder="Name"
-                            />
-                            <input
-                              {...form.register(
-                                `recipeIngredients.${index}.ingredient`
-                              )}
-                              placeholder="Ingredient"
-                            />
-                            <input
-                              {...form.register(
-                                `recipeIngredients.${index}.quantity`
-                              )}
-                              type="number"
-                              placeholder="Quantity"
-                            />
-                            <select
-                              {...form.register(
-                                `recipeIngredients.${index}.unit`
-                              )}
-                            >
-                              {unitEnum.options.map((option) => (
-                                <option key={option} value={option}>
-                                  {option}
-                                </option>
-                              ))}
-                            </select>
-                            <button type="button" onClick={() => remove(index)}>
-                              Remove
-                            </button>
-                          </div>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            append({
-                              name: "",
-                              ingredient: "",
-                              quantity: 0,
-                              unit: "GRAM",
+                        <Input
+                          placeholder="Ingredient"
+                          value={newIngredient.ingredient}
+                          onChange={(e) =>
+                            setNewIngredient({
+                              ...newIngredient,
+                              ingredient: e.target.value,
                             })
                           }
-                        >
-                          Add Ingredient
-                        </button>
+                        />
+                        <div className="flex items-center justify-around">
+                          <Input
+                            className="w-1/3 min-w-[280px]"
+                            type="number"
+                            placeholder="Quantity"
+                            value={newIngredient.quantity}
+                            onChange={(e) =>
+                              setNewIngredient({
+                                ...newIngredient,
+                                quantity: e.target.value,
+                              })
+                            }
+                          />
+                          <FormItem className="flex flex-col">
+                            <FormLabel className="text-lg">Unit</FormLabel>
+                            <Select
+                              onValueChange={(value) =>
+                                setNewIngredient({
+                                  ...newIngredient,
+                                  unit: value,
+                                })
+                              }
+                            >
+                              <SelectTrigger className="w-full min-w-[280px]">
+                                <SelectValue placeholder="Select the matching unit" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectLabel>Unit</SelectLabel>
+                                  {unitEnum.options.map((option) => (
+                                    <SelectItem key={option} value={option}>
+                                      {option.toLowerCase()}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                          </FormItem>
+                          <Button type="button" onClick={() => addIngredient()}>
+                            Add Ingredient
+                          </Button>
+                        </div>
                       </div>
                     </FormControl>
                   </FormItem>
