@@ -29,14 +29,13 @@ public class ImageService {
         return null;
     }
 
-    public String uploadRecipeImage(MultipartFile imageFile, Object object) throws IOException {
+    public void uploadImage(MultipartFile imageFile, Object object) throws IOException {
         var image = setImage(object);
         image.setName(imageFile.getOriginalFilename());
         image.setType(imageFile.getContentType());
         image.setImageData(ImageUtils.compressImage(imageFile.getBytes()));
         image.setLink(object);
         imageRepository.save(image);
-        return "file uploaded successfully : " + imageFile.getOriginalFilename();
     }
 
     public byte[] downloadImage(String imageName) {

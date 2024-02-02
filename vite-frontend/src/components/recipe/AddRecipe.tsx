@@ -126,7 +126,9 @@ const AddRecipe: React.FC = () => {
     const updatedIngredients = form
       .getValues("recipeIngredients")
       .filter((_, i) => i !== index);
-    form.setValue("recipeIngredients", updatedIngredients);
+    form.setValue("recipeIngredients", updatedIngredients, {
+      shouldValidate: true,
+    });
   };
 
   const addCategory = () => {
@@ -143,7 +145,9 @@ const AddRecipe: React.FC = () => {
     const updatedCategories = form
       .getValues("categories")
       .filter((_, i) => i !== index);
-    form.setValue("categories", updatedCategories);
+    form.setValue("categories", updatedCategories, {
+      shouldValidate: true,
+    });
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -223,16 +227,17 @@ const AddRecipe: React.FC = () => {
                   </FormItem>
                 )}
               />
-              <FormItem>
-                {form.getValues().categories.map((category, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => removeCategoryAtIndex(index)}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </FormItem>
+              {form.getValues().categories.map((category, index) => (
+                <Button
+                  key={index}
+                  type="button"
+                  onClick={() => {
+                    removeCategoryAtIndex(index);
+                  }}
+                >
+                  {category}
+                </Button>
+              ))}
               <FormField
                 control={form.control}
                 name="categories"
@@ -288,6 +293,7 @@ const AddRecipe: React.FC = () => {
                   .getValues()
                   .recipeIngredients.map((recipeIngredient, index) => (
                     <Button
+                      type="button"
                       key={index}
                       onClick={() => removeIngredientAtIndex(index)}
                     >

@@ -197,11 +197,11 @@ public class Seeder implements CommandLineRunner {
                 imageService.seedImage("src/pizza-margarita.jpg"),
         };
 
-        imageService.uploadRecipeImage(image[0], recipe);
-        imageService.uploadRecipeImage(image[1], recipe1);
-        imageService.uploadRecipeImage(image[2], recipe2);
-        imageService.uploadRecipeImage(image[3], recipe3);
-        imageService.uploadRecipeImage(image[4], recipe4);
+        imageService.uploadImage(image[0], recipe);
+        imageService.uploadImage(image[1], recipe1);
+        imageService.uploadImage(image[2], recipe2);
+        imageService.uploadImage(image[3], recipe3);
+        imageService.uploadImage(image[4], recipe4);
 
         recipe.setTitle("Pasta");
         recipe.setSummary("This pasta is really good");

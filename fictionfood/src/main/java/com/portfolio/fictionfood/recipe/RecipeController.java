@@ -169,7 +169,7 @@ public class RecipeController {
                     })
                     .collect(Collectors.toCollection(HashSet::new)));
             recipeRepository.save(recipe);
-            imageService.uploadRecipeImage(image, recipe);
+            imageService.uploadImage(image, recipe);
             recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
             return new ResponseEntity<>(recipeRepository.save(recipe), HttpStatus.CREATED);
         } catch (IOException e) {
