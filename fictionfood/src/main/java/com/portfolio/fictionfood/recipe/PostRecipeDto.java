@@ -20,5 +20,4 @@ public class PostRecipeDto {
     private List<RecipeIngredientDto> recipeIngredients;
     private String[] categories;
     private Boolean isPublished;
-    private MultipartFile image;
 }

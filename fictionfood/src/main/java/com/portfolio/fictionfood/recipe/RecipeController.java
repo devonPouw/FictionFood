@@ -1,9 +1,12 @@
 package com.portfolio.fictionfood.recipe;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.fictionfood.authentication.token.TokenRepository;
 import com.portfolio.fictionfood.category.Category;
+import com.portfolio.fictionfood.category.CategoryRepository;
 import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
+import com.portfolio.fictionfood.image.MultipartImage;
 import com.portfolio.fictionfood.image.RecipeImage;
 import com.portfolio.fictionfood.ingredient.Ingredient;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
@@ -21,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -38,13 +42,15 @@ public class RecipeController {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final TokenRepository tokenRepository;
-
+    private final ObjectMapper objectMapper;
     @Value("${app.recipe-rules.max-per-month}")
     int maxRecipesPerMonth;
     @Autowired
     private RecipeRepository recipeRepository; //Without @Autowired, Function below will not work.
     Function<User, Boolean> hasNotExceededMaxPerMonth = user ->
             recipeRepository.countByAuthorAndDatePublishedAfter(user, LocalDateTime.now().minusMonths(1)) < maxRecipesPerMonth;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<RecipeInfoDto> getRecipeById(@PathVariable("id") long id,
@@ -114,13 +120,16 @@ public class RecipeController {
     }
 
     @PostMapping
-    public ResponseEntity<Recipe> postRecipe(@ModelAttribute PostRecipeDto recipeDto,
+    public ResponseEntity<?> postRecipe(@RequestPart("recipe") String recipeJson,
+                                             @RequestPart("image") MultipartFile image,
                                              @AuthenticationPrincipal User currentUser) {
         if (!checkIfAllowedToPost(currentUser)) {
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
 
         try {
+            PostRecipeDto recipeDto = objectMapper.readValue(recipeJson, PostRecipeDto.class);
+
             var recipe = new Recipe();
             recipe.setTitle(recipeDto.getTitle());
             recipe.setSummary(recipeDto.getSummary());
@@ -134,6 +143,7 @@ public class RecipeController {
                     .map(categoryDto -> {
                         Category category = new Category();
                         category.setName(categoryDto);
+                        categoryRepository.save(category);
                         return category;
                     })
                     .collect(Collectors.toSet())));
@@ -158,8 +168,9 @@ public class RecipeController {
                         return recipeIngredient;
                     })
                     .collect(Collectors.toCollection(HashSet::new)));
-            String uploadImage = imageService.uploadRecipeImage(recipeDto.getImage(), recipe);
-            recipe.setImage((RecipeImage) imageRepository.findByName(uploadImage).orElseThrow());
+            recipeRepository.save(recipe);
+            imageService.uploadRecipeImage(image, recipe);
+            recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
             return new ResponseEntity<>(recipeRepository.save(recipe), HttpStatus.CREATED);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -1,9 +1,4 @@
-import {
-  IPostRecipeData,
-  IRecipeData,
-  IRecipeIngredientData,
-  IRecipeList,
-} from "@/types/Recipe";
+import { IRecipeData, IRecipeList } from "@/types/Recipe";
 import axios from "axios";
 
 export const backendApi = {
@@ -59,39 +54,20 @@ function getAllRecipes(page: number, amount: number) {
   );
 }
 
-function getRecipeById(id: number) {
-  return http.get<IRecipeData>(`/recipes/${id}`);
+function getRecipeById(id: number, token: string) {
+  return http.get<IRecipeData>(`/recipes/${id}`, {
+    headers: {
+      Authorization: bearer(token),
+    },
+  });
 }
 
-function postRecipe(
-  title: string,
-  summary: string,
-  content: string,
-  recipeIngredients: IRecipeIngredientData[],
-  categories: string[],
-  isPublished: boolean,
-  image: File,
-  token: string
-) {
-  return http.post<IPostRecipeData>(
-    "/recipes",
-    {
-      title,
-      summary,
-      content,
-      recipeIngredients,
-      categories,
-      isPublished,
-      image,
+function postRecipe(formData: FormData, token: string) {
+  return http.post("/recipes", formData, {
+    headers: {
+      Authorization: bearer(token),
     },
-
-    {
-      headers: {
-        title: title,
-        Authorization: bearer(token),
-      },
-    }
-  );
+  });
 }
 
 const http = axios.create({

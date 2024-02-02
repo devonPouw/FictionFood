@@ -1,4 +1,3 @@
-
 export interface IRecipeData {
     id: number,
     title: string,
@@ -16,7 +15,6 @@ export interface IPostRecipeData {
     recipeIngredients: IRecipeIngredientData[];
     categories: string[];
     isPublished: boolean;
-    image?: File;
   }
 export interface IRecipeIngredientData {
     ingredient: string,

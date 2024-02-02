@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone";
 import * as z from "zod";
 import { backendApi } from "@/services/ApiMappings";
 import { useAuth } from "@/services/auth/AuthContext";
-import { IPostRecipeData, IRecipeIngredientData } from "@/types/Recipe";
+import { IRecipeIngredientData } from "@/types/Recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import {
@@ -156,38 +156,41 @@ const AddRecipe: React.FC = () => {
     multiple: false,
   });
 
-  const handlePostRecipe = async (formValue: IPostRecipeData) => {
-    const {
-      title,
-      summary,
-      content,
-      recipeIngredients,
-      categories,
-      isPublished,
-      image,
-    } = formValue;
+  const handlePostRecipe = async () => {
     setMessage("");
     setLoading(true);
-
+    console.log("");
     const token = getToken();
     if (token === null) {
       navigate("/login");
       setLoading(false);
       return;
     }
+    const formData = new FormData();
+    const {
+      title,
+      summary,
+      content,
+      isPublished,
+      recipeIngredients,
+      categories,
+    } = form.getValues();
 
+    const recipeData = {
+      title,
+      summary,
+      content,
+      isPublished,
+      recipeIngredients,
+      categories,
+    };
+
+    formData.append("recipe", JSON.stringify(recipeData));
+    if (form.getValues().image) {
+      formData.append("image", form.getValues().image);
+    }
     try {
-      console.log(formValue);
-      const response = await backendApi.postRecipe(
-        title,
-        summary,
-        content,
-        recipeIngredients,
-        categories,
-        isPublished,
-        image,
-        token
-      );
+      const response = await backendApi.postRecipe(formData, token);
       console.log(response);
       setLoading(false);
       navigate("/");
