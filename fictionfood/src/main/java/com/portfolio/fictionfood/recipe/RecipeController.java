@@ -8,6 +8,7 @@ import com.portfolio.fictionfood.image.RecipeImage;
 import com.portfolio.fictionfood.ingredient.Ingredient;
 import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
+import com.portfolio.fictionfood.recipeingredient.RecipeIngredientDto;
 import com.portfolio.fictionfood.user.User;
 import com.portfolio.fictionfood.user.UserRole;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class RecipeController {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final TokenRepository tokenRepository;
+
     @Value("${app.recipe-rules.max-per-month}")
     int maxRecipesPerMonth;
     @Autowired
@@ -45,9 +47,29 @@ public class RecipeController {
             recipeRepository.countByAuthorAndDatePublishedAfter(user, LocalDateTime.now().minusMonths(1)) < maxRecipesPerMonth;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Recipe> getRecipeById(@PathVariable("id") long id) {
+    public ResponseEntity<RecipeInfoDto> getRecipeById(@PathVariable("id") long id,
+                                                       @AuthenticationPrincipal User currentUser) {
         try {
-            return new ResponseEntity<>(recipeRepository.findByIdAndIsPublished(id, true).orElseThrow(), HttpStatus.OK);
+            var recipe = recipeRepository.findById(id).orElseThrow();
+            if (!recipe.getAuthor().equals(currentUser) && !recipe.getIsPublished()) {
+                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+            }
+            byte[] recipeImageData = imageService.downloadImage(recipe.getImage().getName());
+
+            var recipeInfo = RecipeInfoDto.builder()
+                    .title(recipe.getTitle())
+                    .summary(recipe.getSummary())
+                    .content(recipe.getContent())
+                    .recipeIngredients(recipe.getRecipeIngredients().stream().map(recipeIngredient -> new RecipeIngredientDto(
+                            recipeIngredient.getUnit(),
+                            recipeIngredient.getQuantity(),
+                            recipeIngredient.getIngredient().getName())).collect(Collectors.toSet()))
+                    .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
+                    .author(recipe.getAuthor().getNickname())
+                    .recipeImage(recipeImageData)
+                    .build();
+
+            return new ResponseEntity<>(recipeInfo, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
