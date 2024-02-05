@@ -1,8 +1,8 @@
 package com.portfolio.fictionfood.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
 import com.portfolio.fictionfood.authentication.token.Token;
 import com.portfolio.fictionfood.image.UserImage;
 import com.portfolio.fictionfood.recipe.Recipe;
@@ -33,17 +33,14 @@ public class User implements UserDetails {
     private Long id;
 
     @NonNull
-    @JsonView({UserViews.viewMe.class})
     @Column(unique = true)
     private String username;
 
     @NonNull
-    @JsonView({UserViews.viewMe.class})
     @Column(unique = true)
     private String email;
 
     @NonNull
-    @JsonView({UserViews.viewMe.class})
     @Column(unique = true)
     private String nickname;
 
@@ -51,19 +48,19 @@ public class User implements UserDetails {
     private String password;
 
     @NonNull
-    @JsonView(UserViews.viewMe.class)
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     @JsonManagedReference
     private Set<Token> tokens;
 
     @OneToMany(mappedBy = "author")
+    @JsonIgnore
     @JsonBackReference
     private Set<Recipe> recipes;
 
-    @JsonView({UserViews.viewMe.class})
     @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
     private UserImage avatar;
