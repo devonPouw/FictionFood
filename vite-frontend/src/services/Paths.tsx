@@ -1,9 +1,9 @@
 import Profile from "@/components/auth/Profile";
 import AddRecipe from "@/components/recipe/AddRecipe";
+import RecipeList from "@/components/recipe/RecipeList";
 import Home from "@/pages/Home";
 import Login from "@/pages/LoginPage";
 import Recipe from "@/pages/Recipe";
-import Recipes from "@/pages/Recipes";
 import Register from "@/pages/RegisterPage";
 
 export type AccountType = "MODERATOR" | "CHEF" | "VISITOR";
@@ -41,10 +41,10 @@ export const navList = [
   {
     path: "/recipes",
     allowedAccountTypes: allAccountTypes,
-    element: () => <Recipes />,
+    element: () => <RecipeList />,
   },
   {
-    path: "/recipes/:recipeId",
+    path: "/recipes/:id",
     allowedAccountTypes: allAccountTypes,
     element: () => <Recipe />,
   },

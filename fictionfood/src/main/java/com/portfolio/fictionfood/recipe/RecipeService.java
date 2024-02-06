@@ -45,6 +45,7 @@ public class RecipeService {
         byte[] recipeImageData = imageService.downloadImage(recipe.getImage().getName());
 
         return RecipeInfoDto.builder()
+                .id(recipe.getId())
                 .title(recipe.getTitle())
                 .summary(recipe.getSummary())
                 .content(recipe.getContent())

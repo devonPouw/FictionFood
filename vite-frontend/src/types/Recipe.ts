@@ -1,5 +1,5 @@
-export interface IRecipeData {
-    id: number,
+export interface IRecipePreviewData {
+    id: number | null,
     title: string,
     summary: string,
     categories: string[],
@@ -7,6 +7,18 @@ export interface IRecipeData {
     author: string,
     datePublished: string,
     imageData: Uint8Array
+}
+export interface IRecipeData {
+    id: number | null,
+    title: string,
+    summary: string,
+    content: string,
+    recipeIngredients: IRecipeIngredientData[],
+    categories: string[],
+    rating: number,
+    author: string,
+    datePublished: string,
+    recipeImage?: Uint8Array
 }
 export interface IPostRecipeData {
     title: string;
@@ -22,7 +34,7 @@ export interface IRecipeIngredientData {
     unit: string;
 }
 export interface IRecipeList {
-    recipes: IRecipeData[],
+    recipes: IRecipePreviewData[],
     currentPage: number,
     totalItems: number,
     totalPages: number

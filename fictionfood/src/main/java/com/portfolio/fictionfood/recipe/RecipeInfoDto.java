@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RecipeInfoDto {
+    private Long id;
     private String title;
     private String summary;
     private String content;
