@@ -30,8 +30,7 @@ const Login: React.FC = () => {
       return;
     }
     try {
-      const response = await backendApi.logout(token);
-      console.log(response);
+      await backendApi.logout(token);
       Auth.userLogout();
       navigate("/");
     } catch (error) {

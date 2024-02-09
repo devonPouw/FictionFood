@@ -23,9 +23,6 @@ function register(
     username,
     email,
     password,
-    headers: {
-      "Content-type": "application/json",
-    },
   });
 }
 
@@ -33,17 +30,13 @@ function login(username: string, password: string) {
   return http.post("/auth/login", {
     username,
     password,
-    headers: {
-      "Content-type": "application/json",
-    },
   });
 }
 
 function logout(token: string) {
-  return http.post("/auth/logout", {
+  return http.get("/auth/logout", {
     headers: {
       Authorization: bearer(token),
-      "Content-type": "application/json",
     },
   });
 }
@@ -113,5 +106,5 @@ export function parseJwt(token: string) {
 }
 
 function bearer(token: string) {
-  return `Bearer ${token}`;
+  return `Bearer ${token}` || null;
 }
