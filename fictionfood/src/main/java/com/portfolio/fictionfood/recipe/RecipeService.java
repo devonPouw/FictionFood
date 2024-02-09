@@ -11,6 +11,7 @@ import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredientDto;
 import com.portfolio.fictionfood.user.User;
+import com.portfolio.fictionfood.user.UserRepository;
 import com.portfolio.fictionfood.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +36,7 @@ public class RecipeService {
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     public RecipeInfoDto getRecipeByIdAndUser(long id, User currentUser) throws UnauthorizedException {
         var recipe = recipeRepository.findById(id).orElseThrow();
@@ -86,7 +89,7 @@ public class RecipeService {
         return response;
     }
 
-    public Recipe postRecipe(String recipeJson, MultipartFile image, User currentUser) throws IOException {
+    public Recipe postRecipe(String recipeJson, MultipartFile image, Principal principal) throws IOException {
         PostRecipeDto recipeDto = objectMapper.readValue(recipeJson, PostRecipeDto.class);
 
         var recipe = new Recipe();
@@ -94,7 +97,7 @@ public class RecipeService {
         recipe.setSummary(recipeDto.getSummary());
         recipe.setContent(recipeDto.getContent());
         recipe.setIsPublished(recipeDto.getIsPublished());
-        recipe.setAuthor(currentUser);
+        recipe.setAuthor(userRepository.findByUsername(principal.getName()).orElseThrow());
         recipe.setRating(BigDecimal.valueOf(0.0));
         recipe.setDatePublished(LocalDateTime.now());
 //                  recipe.setAmountOfReviews(0);

@@ -1,11 +1,7 @@
 package com.portfolio.fictionfood.user;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.portfolio.fictionfood.authentication.token.Token;
 import com.portfolio.fictionfood.image.UserImage;
-import com.portfolio.fictionfood.recipe.Recipe;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
@@ -13,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Set;
 
 @Jacksonized
 @Getter
@@ -50,16 +45,6 @@ public class User implements UserDetails {
     @NonNull
     @Enumerated(EnumType.STRING)
     private UserRole role;
-
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    @JsonManagedReference
-    private Set<Token> tokens;
-
-    @OneToMany(mappedBy = "author")
-    @JsonIgnore
-    @JsonBackReference
-    private Set<Recipe> recipes;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
