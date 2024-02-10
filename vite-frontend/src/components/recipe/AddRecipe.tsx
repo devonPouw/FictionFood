@@ -88,6 +88,8 @@ const AddRecipe: React.FC = () => {
     unit: "GRAM",
   });
   const [newCategory, setNewCategory] = useState<string>("");
+  const [imageSelected, setImageSelected] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { getToken } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -104,7 +106,13 @@ const AddRecipe: React.FC = () => {
   });
 
   const onDrop = (acceptedFiles: File[]) => {
-    form.setValue("image", acceptedFiles[0]);
+    const file = acceptedFiles[0];
+    if (file) {
+      form.setValue("image", file);
+      const fileUrl = URL.createObjectURL(file);
+      setImageUrl(fileUrl);
+      setImageSelected(true);
+    }
   };
 
   const addIngredient = () => {
@@ -402,6 +410,19 @@ const AddRecipe: React.FC = () => {
                   </p>
                 )}
               </div>
+              {imageSelected ? (
+                imageUrl && (
+                  <div
+                    className="h-40 w-40"
+                    style={{
+                      backgroundImage: `url(${imageUrl})`,
+                      backgroundSize: "cover",
+                    }}
+                  ></div>
+                )
+              ) : (
+                <div></div>
+              )}
               <div className="w-full flex justify-center">
                 <div>
                   <div>
