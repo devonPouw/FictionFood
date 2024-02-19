@@ -5,20 +5,10 @@ import { useAuth } from "@/services/auth/AuthContext";
 import { IRecipeData } from "@/types/Recipe";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Recipe() {
-  const initialRecipeState = {
-    id: null,
-    title: "",
-    summary: "",
-    content: "",
-    recipeIngredients: [],
-    categories: [],
-    rating: 0,
-    author: "",
-    datePublished: "",
-  };
-  const [recipe, setRecipe] = useState<IRecipeData>(initialRecipeState);
+  const [recipe, setRecipe] = useState<IRecipeData | null>(null);
   const { getToken } = useAuth();
   const { id } = useParams<{ id: string }>();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -46,37 +36,52 @@ export default function Recipe() {
   return (
     <div className="w-screen h-screen">
       <NavBar />
-      <div>{recipe.title}</div>
-      <div>Rating: {recipe.rating} ★</div>
-      <div>
-        {recipe.categories.map((category, index) => (
-          <div key={index}>{category}</div>
-        ))}
-      </div>
-      <div className="p-2">
-        {imageSrc && (
-          <img
-            className="w-full max-h-[300px] min-h-[300px] object-cover rounded-lg"
-            src={imageSrc}
-            alt={recipe?.title || "Recipe Image"}
-          ></img>
-        )}
-      </div>
-      <div>{recipe.summary}</div>
-      <div>{recipe.content}</div>
-
-      <div>
-        {recipe.recipeIngredients.map((recipeIngredient, index) => (
-          <div key={index}>
-            {recipeIngredient.quantity}
-            {recipeIngredient.ingredient}
-            {recipeIngredient.unit}
+      {recipe ? (
+        <div>
+          <div>{recipe.title}</div>
+          <div>Rating: {recipe.rating} ★</div>
+          <div>
+            {recipe.categories.map((category, index) => (
+              <div key={index}>{category}</div>
+            ))}
           </div>
-        ))}
-      </div>
+          <div className="p-2">
+            {imageSrc && (
+              <img
+                className="w-full max-h-[300px] min-h-[300px] object-cover rounded-lg"
+                src={imageSrc}
+                alt={recipe?.title || "Recipe Image"}
+              ></img>
+            )}
+          </div>
+          <div>{recipe.summary}</div>
+          <div>{recipe.content}</div>
 
-      <div>{recipe.author}</div>
-      <div>{recipe.datePublished}</div>
+          <div>
+            {recipe.recipeIngredients.map((recipeIngredient, index) => (
+              <div key={index}>
+                {recipeIngredient.quantity}
+                {recipeIngredient.ingredient}
+                {recipeIngredient.unit}
+              </div>
+            ))}
+          </div>
+
+          <div>{recipe.author}</div>
+          <div>{recipe.datePublished}</div>
+        </div>
+      ) : (
+        <div className=" h-5/6 flex items-center justify-center space-x-4 m-5">
+          <Skeleton className="h-1/2 w-1/3" />
+          <div className="space-y-2 flex-row">
+            <Skeleton className="h-8 w-[250px]" />
+            <Skeleton className="h-8 w-[220px]" />
+            <Skeleton className="h-8 w-[210px]" />
+            <Skeleton className="h-8 w-[230px]" />
+            <Skeleton className="h-8 w-[200px]" />
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
