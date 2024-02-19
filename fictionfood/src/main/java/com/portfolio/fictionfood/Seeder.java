@@ -49,6 +49,16 @@ public class Seeder implements CommandLineRunner {
         var recipe3 = new Recipe();
         var recipe4 = new Recipe();
 
+        MultipartFile[] image;
+        image = new MultipartFile[]{
+                imageService.seedImage("src/pasta.jpg"),
+                imageService.seedImage("src/bacon&eggs.jpg"),
+                imageService.seedImage("src/steak.jpg"),
+                imageService.seedImage("src/spaghetti-bolognese.jpg"),
+                imageService.seedImage("src/pizza-margarita.jpg"),
+                imageService.seedImage("src/IMG_4498.jpg"),
+        };
+
         recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2, recipe3, recipe4));
 
         var user = User.builder()
@@ -60,6 +70,10 @@ public class Seeder implements CommandLineRunner {
                 .build();
 
         userRepository.save(user);
+        imageService.uploadImage(image[5], user);
+        user.setAvatar(imageRepository.findByUser(user).orElseThrow());
+        userRepository.save(user);
+
 
         Category category = new Category();
         category.setName("Disney");
@@ -187,15 +201,6 @@ public class Seeder implements CommandLineRunner {
         recipeIngredientRepository.saveAll(Set.of(recipeIngredient, recipeIngredient1, recipeIngredient2,
                 recipeIngredient3, recipeIngredient4, recipeIngredient5, recipeIngredient6, recipeIngredient7,
                 recipeIngredient8, recipeIngredient9, recipeIngredient10));
-
-        MultipartFile[] image;
-        image = new MultipartFile[]{
-                imageService.seedImage("src/pasta.jpg"),
-                imageService.seedImage("src/bacon&eggs.jpg"),
-                imageService.seedImage("src/steak.jpg"),
-                imageService.seedImage("src/spaghetti-bolognese.jpg"),
-                imageService.seedImage("src/pizza-margarita.jpg"),
-        };
 
         imageService.uploadImage(image[0], recipe);
         imageService.uploadImage(image[1], recipe1);
