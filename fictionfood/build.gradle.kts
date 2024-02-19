@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.1.5"
+	id("org.springframework.boot") version "3.2.2"
 	id("io.spring.dependency-management") version "1.1.3"
 }
 
@@ -8,7 +8,9 @@ group = "com.portfolio"
 version = "0.0.1-SNAPSHOT"
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 configurations {
