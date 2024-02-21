@@ -1,6 +1,5 @@
 import React, {
   createContext,
-  useContext,
   useState,
   useEffect,
   ReactNode,
@@ -28,50 +27,58 @@ interface AuthProviderProps {
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
 
-  const loginUserWithToken = useCallback((token: string) => {
-    try {
-      const decodedToken = parseJwt(token);
-      if (decodedToken && typeof decodedToken === "object") {
-        console.log(decodedToken);
-
-        const user = decodedToken as IUser;
-        setUser(user);
-      } else {
-        throw new Error("Decoded token is not an object.");
-      }
-    } catch (error) {
-      console.error("Invalid token or error parsing JWT:", error);
-      userLogout();
-    }
+  const userLogout = useCallback((): void => {
+    sessionStorage.removeItem("token");
+    setUser(null);
   }, []);
+
+  const loginUserWithToken = useCallback(
+    (token: string) => {
+      // Check if the token is truthy before proceeding
+      if (!token) {
+        console.log("Token is undefined or null, aborting login.");
+        return;
+      }
+      const decodedToken = parseJwt(token);
+      if (
+        decodedToken &&
+        typeof decodedToken === "object" &&
+        decodedToken.exp > Date.now() / 1000
+      ) {
+        setUser(decodedToken as IUser);
+      } else {
+        userLogout(); // Ensure this doesn't lead to a state where logout could get called before the component is fully mounted
+      }
+    },
+    [userLogout]
+  );
 
   useEffect(() => {
     const storedToken = sessionStorage.getItem("token");
     if (storedToken) {
       loginUserWithToken(storedToken);
     }
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
   }, [loginUserWithToken]);
 
-  const userIsAuthenticated = (): boolean => !!user;
+  const userIsAuthenticated = useCallback((): boolean => !!user, [user]);
 
-  const userLogin = (token: string): void => {
-    sessionStorage.setItem("token", token);
-    loginUserWithToken(token);
-  };
+  const userLogin = useCallback(
+    (token: string): void => {
+      sessionStorage.setItem("token", token);
+      loginUserWithToken(token);
+    },
+    [loginUserWithToken]
+  );
 
-  const userLogout = (): void => {
-    sessionStorage.removeItem("token");
-    setUser(null);
-  };
+  const getAccountType = useCallback(
+    (): AccountType => (user ? user.role : accountType.VISITOR),
+    [user]
+  );
 
-  const getAccountType = (): AccountType =>
-    user ? user.role : accountType.VISITOR;
-
-  const getToken = (): string | null => sessionStorage.getItem("token");
+  const getToken = useCallback(
+    (): string | null => sessionStorage.getItem("token"),
+    []
+  );
 
   const contextValue: AuthContextProps = {
     user,
@@ -88,13 +95,5 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 };
 
 export default AuthContext;
-
-export function useAuth(): AuthContextProps {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}
 
 export { AuthProvider };

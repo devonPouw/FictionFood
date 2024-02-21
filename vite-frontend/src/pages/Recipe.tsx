@@ -1,7 +1,6 @@
 import Footer from "@/components/footer/Footer";
 import NavBar from "@/components/header/NavBar";
 import { backendApi } from "@/services/ApiMappings";
-import { useAuth } from "@/services/auth/AuthContext";
 import { IRecipeData } from "@/types/Recipe";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -9,14 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Recipe() {
   const [recipe, setRecipe] = useState<IRecipeData | null>(null);
-  const { getToken } = useAuth();
   const { id } = useParams<{ id: string }>();
   const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   const fetchRecipe = async () => {
-    const token = getToken() || "";
     try {
-      const response = await backendApi.getRecipeById(Number(id), token);
+      const response = await backendApi.getRecipeById(Number(id));
       console.log(response.data);
       setRecipe(response.data);
       if (response.data.recipeImage) {
@@ -48,7 +45,7 @@ export default function Recipe() {
           <div className="p-2">
             {imageSrc && (
               <img
-                className="w-full max-h-[300px] min-h-[300px] object-cover rounded-lg"
+                className="w-full max-h-[300px] min-h-[300px] object-contain rounded-lg"
                 src={imageSrc}
                 alt={recipe?.title || "Recipe Image"}
               ></img>

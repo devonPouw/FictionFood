@@ -1,4 +1,4 @@
-import { useAuth } from "@/services/auth/AuthContext";
+import { useAuth } from "@/services/auth/useAuth";
 import { Link, NavigateFunction, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -21,16 +21,10 @@ const Login: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { user } = useAuth();
   const Auth = useAuth();
-  const { getToken } = useAuth();
 
   const handleLogout = async () => {
-    const token = getToken();
-    if (token === null) {
-      navigate("/");
-      return;
-    }
     try {
-      await backendApi.logout(token);
+      await backendApi.logout();
       Auth.userLogout();
       navigate("/");
     } catch (error) {

@@ -33,12 +33,8 @@ function login(username: string, password: string) {
   });
 }
 
-function logout(token: string) {
-  return http.get("/auth/logout", {
-    headers: {
-      Authorization: bearer(token),
-    },
-  });
+function logout() {
+  return http.get("/auth/logout");
 }
 
 function getAllRecipes(page: number, amount: number) {
@@ -47,42 +43,39 @@ function getAllRecipes(page: number, amount: number) {
   );
 }
 
-function getRecipeById(id: number, token: string) {
-  return http.get<IRecipeData>(`/recipes/${id}`, {
-    headers: {
-      Authorization: bearer(token),
-    },
-  });
+function getRecipeById(id: number) {
+  return http.get<IRecipeData>(`/recipes/${id}`);
 }
 
-function postRecipe(formData: FormData, token: string) {
-  return http.post("/recipes", formData, {
-    headers: {
-      Authorization: bearer(token),
-    },
-  });
+function postRecipe(formData: FormData) {
+  return http.post("/recipes", formData);
 }
 
 const http = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "https://localhost:8443/api",
   // withCredentials: true,
 });
 
 http.interceptors.request.use(
   function (config) {
-    // If token is expired, redirect user to login
-    if (config.headers.Authorization) {
-      const token = (config.headers.Authorization as string).split(" ")[1];
+    const token = sessionStorage.getItem("token");
+    if (token) {
       try {
         const decodedToken = parseJwt(token);
-        if (Date.now() > decodedToken.exp * 1000) {
-          return Promise.reject(new Error("Token expired"));
+        if (decodedToken && Date.now() <= decodedToken.exp * 1000) {
+          config.headers.Authorization = `Bearer ${token}`;
+        } else {
+          // Token is expired or invalid, remove it from sessionStorage
+          sessionStorage.removeItem("token");
+          // Optionally, redirect to login or handle token expiration appropriately here
+          console.error("Token expired. Please login again.");
         }
       } catch (error) {
-        // Handle token verification error, e.g., token is invalid
-        return Promise.reject(error);
+        console.error("Token not found", error);
+        sessionStorage.removeItem("token");
       }
     }
+
     return config;
   },
   function (error) {
@@ -95,7 +88,6 @@ export function parseJwt(token: string) {
     if (!token) {
       return null;
     }
-
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace("-", "+").replace("_", "/");
     return JSON.parse(window.atob(base64));
@@ -103,8 +95,4 @@ export function parseJwt(token: string) {
     console.error("Error parsing JWT:", error);
     return null;
   }
-}
-
-function bearer(token: string) {
-  return `Bearer ${token}` || null;
 }

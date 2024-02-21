@@ -1,13 +1,16 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./useAuth";
 
 interface ProtectedRouteProps {
   page: React.ReactNode;
   allowedAccountTypes: string[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ page, allowedAccountTypes }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  page,
+  allowedAccountTypes,
+}) => {
   const { getAccountType } = useAuth();
   const accountType = getAccountType();
 

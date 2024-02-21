@@ -38,3 +38,6 @@ out/
 
 ### ignore ###
 /src/main/resources/application.yml
+/src/main/resources/key.pem
+/src/main/resources/keystore.p12
+/src/main/resources/cert.pem

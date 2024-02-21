@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import * as z from "zod";
 import { backendApi } from "@/services/ApiMappings";
-import { useAuth } from "@/services/auth/AuthContext";
+import { useAuth } from "@/services/auth/useAuth";
 import { IRecipeIngredientData } from "@/types/Recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
