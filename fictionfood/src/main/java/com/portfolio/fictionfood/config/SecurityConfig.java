@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,12 +22,10 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,24 +56,12 @@ public class SecurityConfig {
             authorization -> pattern -> authorization.requestMatchers(new AntPathRequestMatcher(pattern));
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   HandlerMappingIntrospector introspector,
-                                                   @Value("${spring.h2.console.enabled}") Boolean consoleEnabled,
-                                                   @Value("${spring.h2.console.path}") String h2ConsolePath)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
-        if (consoleEnabled) {
-            var h2RequestMatcher = new MvcRequestMatcher(introspector, "/**");
-            h2RequestMatcher.setServletPath(h2ConsolePath);
-            http.authorizeHttpRequests((a) -> a.requestMatchers(h2RequestMatcher).permitAll());
-            http.headers(headers -> headers
-                    .xssProtection(xss -> xss
-                            .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
-                    ).contentSecurityPolicy(csp -> csp
-                            .policyDirectives("script-src 'self' object-src 'none'")
-                    ));
-            http.authorizeHttpRequests(a -> matchAll.apply(a).apply("/dev/**").permitAll());
-        }
-
+        http.authorizeHttpRequests(a -> matchAll.apply(a).apply("/dev/**").permitAll());
+        http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin).xssProtection(xss -> xss
+                .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
+        ));
 
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests((auth) -> {

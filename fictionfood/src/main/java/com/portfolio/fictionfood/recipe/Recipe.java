@@ -33,7 +33,7 @@ public class Recipe {
     private String summary;
 
     //    @NonNull
-    @Column(columnDefinition = "CLOB")
+    @Column(columnDefinition = "varchar")
     private String content;
 
     private BigDecimal rating;
