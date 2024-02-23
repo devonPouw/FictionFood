@@ -20,18 +20,10 @@ import { backendApi } from "@/services/ApiMappings";
 const Login: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
   const { user } = useAuth();
-  const Auth = useAuth();
-  const { getToken } = useAuth();
 
   const handleLogout = async () => {
-    const token = getToken();
-    if (token === null) {
-      navigate("/");
-      return;
-    }
     try {
-      await backendApi.logout(token);
-      Auth.userLogout();
+      await backendApi.logout();
       navigate("/");
     } catch (error) {
       console.log(error);

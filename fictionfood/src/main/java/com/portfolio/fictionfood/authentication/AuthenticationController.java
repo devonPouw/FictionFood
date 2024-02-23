@@ -1,6 +1,7 @@
 package com.portfolio.fictionfood.authentication;
 
 import com.portfolio.fictionfood.user.UserRepository;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +38,32 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
-            @RequestBody LoginRequest request
-    ) {
-        return new ResponseEntity<>(service.login(request), HttpStatus.OK);
-    }
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    AuthenticationResponse authResponse = service.login(loginRequest);
 
+    // Create HttpOnly cookie for the JWT
+    Cookie jwtCookie = new Cookie("token", authResponse.getAccessToken());
+    jwtCookie.setHttpOnly(true);
+    jwtCookie.setSecure(true); // Ensure you're using HTTPS
+    jwtCookie.setPath("/");
+    // Set a max age for the cookie, if desired
+    jwtCookie.setMaxAge(24 * 60 * 60); // Example: 7 days
+
+    // Add refresh token as a separate HttpOnly cookie, if you're using one
+    Cookie refreshTokenCookie = new Cookie("refreshToken", authResponse.getRefreshToken());
+    refreshTokenCookie.setHttpOnly(true);
+    refreshTokenCookie.setSecure(true);
+    refreshTokenCookie.setPath("/");
+    refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // Example: 30 days
+
+    // Add cookies to the response
+    response.addCookie(jwtCookie);
+    response.addCookie(refreshTokenCookie);
+
+    // You might want to return a simple OK status or some user info
+    return ResponseEntity.ok().body("User logged in successfully");
+}
     @PostMapping("/refresh-token")
     public void refreshToken(
             HttpServletRequest request,

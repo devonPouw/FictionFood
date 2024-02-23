@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { AccountType, accountType } from "@/services/Paths";
 import { IUser } from "@/types/User";
-import { parseJwt } from "../ApiMappings";
 
 interface AuthContextProps {
   user: IUser | null;
@@ -27,40 +26,10 @@ interface AuthProviderProps {
 
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
-
-  const loginUserWithToken = useCallback((token: string) => {
-    try {
-      const decodedToken = parseJwt(token);
-      if (decodedToken && typeof decodedToken === "object") {
-        console.log(decodedToken);
-
-        const user = decodedToken as IUser;
-        setUser(user);
-      } else {
-        throw new Error("Decoded token is not an object.");
-      }
-    } catch (error) {
-      console.error("Invalid token or error parsing JWT:", error);
-      userLogout();
-    }
-  }, []);
-
-  useEffect(() => {
-    const storedToken = sessionStorage.getItem("token");
-    if (storedToken) {
-      loginUserWithToken(storedToken);
-    }
-    const storedUser = sessionStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, [loginUserWithToken]);
-
   const userIsAuthenticated = (): boolean => !!user;
 
   const userLogin = (token: string): void => {
     sessionStorage.setItem("token", token);
-    loginUserWithToken(token);
   };
 
   const userLogout = (): void => {

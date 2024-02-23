@@ -11,15 +11,16 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -65,13 +66,20 @@ public class SecurityConfig {
             var h2RequestMatcher = new MvcRequestMatcher(introspector, "/**");
             h2RequestMatcher.setServletPath(h2ConsolePath);
             http.authorizeHttpRequests((a) -> a.requestMatchers(h2RequestMatcher).permitAll());
-            http.headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
+            http.headers(headers -> headers
+                    .xssProtection(xss -> xss
+                            .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
+                    ).contentSecurityPolicy(csp -> csp
+                            .policyDirectives("script-src 'self' object-src 'none'")
+                    ));
             http.authorizeHttpRequests(a -> matchAll.apply(a).apply("/dev/**").permitAll());
         }
-        http.csrf(AbstractHttpConfigurer::disable);
+
+
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests((auth) -> {
-            matchAll.apply(auth).apply("/api/auth/**").permitAll();
+//            matchAll.apply(auth).apply("/api/auth/**").permitAll();
+            auth.requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll();
             match.apply(auth).apply("/api/recipes", POST).hasAnyRole(allUsers);
             match.apply(auth).apply("/api/recipes", GET).permitAll();
             match.apply(auth).apply("/api/recipes/*", GET).permitAll();
@@ -80,6 +88,11 @@ public class SecurityConfig {
             auth.anyRequest().authenticated();
         });
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf((csrf) -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
+                )
+                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         http.exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
         http.sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider);
