@@ -38,16 +38,16 @@ public class ImageService {
         imageRepository.save(image);
     }
 
-    public byte[] downloadImage(String imageName) {
-        Optional<Image> dbImage = imageRepository.findByName(imageName);
+    public byte[] downloadImage(Long id) {
+        Optional<Image> dbImage = imageRepository.findById(id);
         return dbImage.map(image -> {
             try {
 
                 return ImageUtils.decompressImage(image.getImageData());
             } catch (DataFormatException | IOException exception) {
                 throw new ContextedRuntimeException("Error downloading an image", exception)
-                        .addContextValue("Image ID", image.getId())
-                        .addContextValue("Image name", imageName);
+                        .addContextValue("Image ID", id)
+                        .addContextValue("Image name", image.getName());
             }
         }).orElse(null);
     }

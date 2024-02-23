@@ -68,7 +68,7 @@ public class SecurityConfig {
             match.apply(auth).apply("/api/recipes", POST).hasAnyRole(allUsers);
             match.apply(auth).apply("/api/recipes", GET).permitAll();
             match.apply(auth).apply("/api/recipes/*", GET).permitAll();
-            match.apply(auth).apply("/api/images", POST).permitAll();
+            match.apply(auth).apply("/api/images", POST).hasAnyRole(allUsers);
             match.apply(auth).apply("/api/images/*", GET).permitAll();
             auth.anyRequest().authenticated();
         });

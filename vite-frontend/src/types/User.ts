@@ -4,6 +4,7 @@ export interface IUser {
     sub: string,
     role: AccountType,
     nickname: string,
+    avatarId: number;
     iat: number,
     exp: number,
 }

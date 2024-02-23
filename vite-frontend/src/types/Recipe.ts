@@ -6,7 +6,7 @@ export interface IRecipePreviewData {
     rating: number,
     author: string,
     datePublished: string,
-    imageData: Uint8Array
+    imageId: number;
 }
 export interface IRecipeData {
     id: number | null,
@@ -16,9 +16,10 @@ export interface IRecipeData {
     recipeIngredients: IRecipeIngredientData[],
     categories: string[],
     rating: number,
-    author: string,
+    author: string;
+    authorImageId: number;
     datePublished: string,
-    recipeImage?: Uint8Array
+    imageId: number;
 }
 export interface IPostRecipeData {
     title: string;

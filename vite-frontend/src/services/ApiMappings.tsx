@@ -52,7 +52,7 @@ function postRecipe(formData: FormData) {
 }
 
 const http = axios.create({
-  baseURL: "https://localhost:8443/api",
+  baseURL: import.meta.env.VITE_HTTPS_BACKEND,
   // withCredentials: true,
 });
 

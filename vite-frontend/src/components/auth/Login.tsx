@@ -39,8 +39,11 @@ const Login: React.FC = () => {
             <Avatar>
               <AvatarImage
                 className="hover:cursor-pointer"
-                src="https://github.com/shadcn.png"
-                alt="@shadcn"
+                src={
+                  import.meta.env.VITE_HTTPS_BACKEND +
+                  `/images/${user.avatarId}`
+                }
+                alt="avatar"
               />
               <AvatarFallback>{user.nickname.substring(0, 1)}</AvatarFallback>
             </Avatar>
