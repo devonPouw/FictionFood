@@ -171,7 +171,6 @@ const AddRecipe: React.FC = () => {
   const handlePostRecipe = async () => {
     setMessage("");
     setLoading(true);
-    console.log("");
     const token = getToken();
     if (token === null) {
       navigate("/login");
@@ -202,7 +201,7 @@ const AddRecipe: React.FC = () => {
       formData.append("image", form.getValues().image);
     }
     try {
-      const response = await backendApi.postRecipe(formData, token);
+      const response = await backendApi.postRecipe(formData);
       console.log(response);
       setLoading(false);
       navigate("/");
@@ -213,7 +212,7 @@ const AddRecipe: React.FC = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex flex-col">
+    <div className="w-full h-full flex flex-col">
       <NavBar />
       <div className="container">
         <div className="container">

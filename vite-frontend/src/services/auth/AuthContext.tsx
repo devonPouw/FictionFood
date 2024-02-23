@@ -40,11 +40,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
       const decodedToken = parseJwt(token);
-      if (
-        decodedToken &&
-        typeof decodedToken === "object" &&
-        decodedToken.exp > Date.now() / 1000
-      ) {
+      if (decodedToken && decodedToken.exp > Date.now() / 1000) {
         setUser(decodedToken as IUser);
       } else {
         userLogout(); // Ensure this doesn't lead to a state where logout could get called before the component is fully mounted

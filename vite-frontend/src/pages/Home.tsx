@@ -18,7 +18,7 @@ export default function Home() {
 
   const fetchRecipePreview = async () => {
     try {
-      const response = await backendApi.getAllRecipes(0, 9);
+      const response = await backendApi.getAllRecipes(0, 6);
       setRecipeList(response.data);
     } catch (error) {
       console.log(error);

@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.recipe;
 
-import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +19,7 @@ public class RecipeListDto {
     private String summary;
     private String author;
     private Set<String> categories;
-    private byte[] imageData;
+    private Long imageId;
     private LocalDateTime datePublished;
     private BigDecimal rating;
 }

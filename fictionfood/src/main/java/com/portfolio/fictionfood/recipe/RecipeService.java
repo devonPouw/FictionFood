@@ -45,11 +45,10 @@ public class RecipeService {
                 throw new UnauthorizedException("User is not authorized to access this recipe");
             }
 
-        byte[] recipeImageData = imageService.downloadImage(recipe.getImage().getName());
-
         return RecipeInfoDto.builder()
                 .id(recipe.getId())
                 .title(recipe.getTitle())
+                .rating(recipe.getRating())
                 .summary(recipe.getSummary())
                 .content(recipe.getContent())
                 .recipeIngredients(recipe.getRecipeIngredients().stream().map(recipeIngredient -> new RecipeIngredientDto(
@@ -58,7 +57,8 @@ public class RecipeService {
                         recipeIngredient.getIngredient().getName())).collect(Collectors.toSet()))
                 .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
                 .author(recipe.getAuthor().getNickname())
-                .recipeImage(recipeImageData)
+                .authorImageId(recipe.getAuthor().getAvatar().getId())
+                .imageId(recipe.getImage().getId())
                 .build();
     }
 
@@ -66,19 +66,16 @@ public class RecipeService {
         PageRequest paging = PageRequest.of(page, size, Sort.by("datePublished").descending());
         Page<Recipe> pageRecipes = recipeRepository.findByIsPublished(true, paging);
 
-        List<RecipeListDto> recipeDtoList = pageRecipes.getContent().stream().map(recipe -> {
-            byte[] imageData = imageService.downloadImage(recipe.getImage().getName());
-            return RecipeListDto.builder()
-                    .id(recipe.getId())
-                    .title(recipe.getTitle())
-                    .summary(recipe.getSummary())
-                    .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
-                    .author(recipe.getAuthor().getNickname())
-                    .datePublished(recipe.getDatePublished())
-                    .rating(recipe.getRating())
-                    .imageData(imageData)
-                    .build();
-        }).collect(Collectors.toList());
+        List<RecipeListDto> recipeDtoList = pageRecipes.getContent().stream().map(recipe -> RecipeListDto.builder()
+                .id(recipe.getId())
+                .title(recipe.getTitle())
+                .summary(recipe.getSummary())
+                .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
+                .author(recipe.getAuthor().getNickname())
+                .datePublished(recipe.getDatePublished())
+                .rating(recipe.getRating())
+                .imageId(recipe.getImage().getId())
+                .build()).collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
         response.put("recipes", recipeDtoList);
