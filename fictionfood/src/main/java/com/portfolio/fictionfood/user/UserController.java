@@ -17,7 +17,7 @@ public class UserController {
 
     private final UserService service;
 
-    @PatchMapping("/profile")
+    @PatchMapping("/profile/password")
     public ResponseEntity<?> changePassword(
             @RequestBody ChangePasswordRequest request,
             Principal connectedUser
@@ -25,17 +25,17 @@ public class UserController {
         service.changePassword(request, connectedUser);
         return ResponseEntity.ok().build();
     }
-    @PatchMapping("/profile")
+    @PatchMapping("/profile/avatar")
     public ResponseEntity<?> changeAvatar(@RequestPart("image") MultipartFile image, Principal principal){
         try{
             service.changeAvatar(image, principal);
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        catch(UnauthorizedException u){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
         catch(IOException e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        catch(UnauthorizedException u){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         catch(Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

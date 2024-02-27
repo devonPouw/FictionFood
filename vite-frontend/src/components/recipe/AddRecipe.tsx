@@ -205,7 +205,7 @@ const AddRecipe: React.FC = () => {
       console.log(response);
       setLoading(false);
       navigate("/");
-      setMessage(response.statusText);
+      setMessage(response.data);
     } catch (error) {
       console.log(error);
     }

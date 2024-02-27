@@ -64,7 +64,7 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests((auth) -> {
             matchAll.apply(auth).apply("/api/auth/**").permitAll();
-            match.apply(auth).apply("/api/users/profile", PATCH).hasAnyRole(allUsers);
+            match.apply(auth).apply("/api/users/profile/*", PATCH).hasAnyRole(allUsers);
             match.apply(auth).apply("/api/recipes", POST).hasAnyRole(allUsers);
             match.apply(auth).apply("/api/recipes", GET).permitAll();
             match.apply(auth).apply("/api/recipes/*", GET).permitAll();

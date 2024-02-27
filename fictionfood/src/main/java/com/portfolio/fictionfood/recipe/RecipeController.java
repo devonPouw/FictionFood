@@ -83,7 +83,7 @@ public class RecipeController {
         try {
             Recipe recipe = recipeService.postRecipe(recipeJson, image, principal);
             logger.info("Recipe successfully posted with ID: {}", recipe.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Recipe successfully created!");
         } catch (IOException e) {
             logger.error("Error posting recipe", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

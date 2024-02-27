@@ -53,7 +53,7 @@ export default function RecipeList() {
   };
 
   useEffect(() => {
-    fetchRecipes(recipeList.currentPage);
+    handlePageChange(recipeList.currentPage);
   }, []);
 
   const renderPageNumbers = (
