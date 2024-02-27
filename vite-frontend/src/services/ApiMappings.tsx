@@ -10,20 +10,8 @@ export const backendApi = {
   postRecipe,
 };
 
-function register(
-  role: string,
-  nickname: string,
-  username: string,
-  email: string,
-  password: string
-) {
-  return http.post("/auth/register", {
-    role,
-    nickname,
-    username,
-    email,
-    password,
-  });
+function register(formData: FormData) {
+  return http.post("/auth/register", formData);
 }
 
 function login(username: string, password: string) {

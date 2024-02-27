@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useState } from "react";
 
-import { IRegisterData } from "@/types/User";
 import {
   Form,
   FormControl,
@@ -17,6 +16,15 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { backendApi } from "@/services/ApiMappings";
 import { useAuth } from "@/services/auth/useAuth";
+import { useDropzone } from "react-dropzone";
+
+const MAX_FILE_SIZE: number = 5000000;
+const ACCEPTED_IMAGE_TYPES: string[] = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+];
 
 const Register: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
@@ -24,6 +32,8 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [successful, setSuccessful] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const [imageSelected, setImageSelected] = useState<boolean>(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const Auth = useAuth();
 
   const formSchema = z
@@ -41,6 +51,14 @@ const Register: React.FC = () => {
       password: z.string().min(8).max(24, {
         message: "Must be between 8 and 24 characters long",
       }),
+      avatar: z
+        .any()
+        .refine((file) => file.size <= MAX_FILE_SIZE, {
+          message: "Image must be less than 5MB",
+        })
+        .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+          message: "Unsupported file type",
+        }),
     })
     .required();
 
@@ -52,21 +70,42 @@ const Register: React.FC = () => {
       username: "",
       email: "",
       password: "",
+      avatar: {},
     },
   });
 
-  const handleRegister = async (formValue: IRegisterData) => {
-    const { role, nickname, username, email, password } = formValue;
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      form.setValue("avatar", file);
+      const fileUrl = URL.createObjectURL(file);
+      setImageUrl(fileUrl);
+      setImageSelected(true);
+    }
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/png": [".png"],
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/webp": [".webp"],
+    },
+    multiple: false,
+  });
+
+  const handleRegister = async () => {
     setMessage("");
     setLoading(true);
+    const formData = new FormData();
+    const { role, nickname, username, email, password } = form.getValues();
+    const registerData = { role, nickname, username, email, password };
+    formData.append("register", JSON.stringify(registerData));
+    if (form.getValues().avatar) {
+      formData.append("avatar", form.getValues().avatar);
+    }
     try {
-      const response = await backendApi.register(
-        role,
-        nickname,
-        username,
-        email,
-        password
-      );
+      const response = await backendApi.register(formData);
       const { accessToken } = response.data;
 
       Auth.userLogin(accessToken);
@@ -156,6 +195,36 @@ const Register: React.FC = () => {
                   </FormItem>
                 )}
               />
+              <div
+                {...getRootProps()}
+                style={{
+                  border: "2px dashed #ddd",
+                  padding: "20px",
+                  textAlign: "center",
+                }}
+              >
+                <input {...getInputProps()} />
+                {isDragActive ? (
+                  <p>Drop the image here...</p>
+                ) : (
+                  <p>
+                    Drag 'n' drop an image here, or click to select an image
+                  </p>
+                )}
+              </div>
+              {imageSelected ? (
+                imageUrl && (
+                  <div
+                    className="h-40 w-40"
+                    style={{
+                      backgroundImage: `url(${imageUrl})`,
+                      backgroundSize: "cover",
+                    }}
+                  ></div>
+                )
+              ) : (
+                <div></div>
+              )}
               <div className="w-full flex justify-center">
                 <div>
                   <div>
