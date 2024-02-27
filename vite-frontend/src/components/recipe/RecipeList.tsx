@@ -48,12 +48,8 @@ export default function RecipeList() {
     }
   };
 
-  const handlePageChange = (newPage: number): void => {
-    fetchRecipes(newPage);
-  };
-
   useEffect(() => {
-    handlePageChange(recipeList.currentPage);
+    fetchRecipes(recipeList.currentPage);
   }, []);
 
   const renderPageNumbers = (
@@ -165,7 +161,7 @@ export default function RecipeList() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  handlePageChange(recipeList.currentPage - 1);
+                  fetchRecipes(recipeList.currentPage - 1);
                 }}
               />
             </PaginationItem>
@@ -173,7 +169,7 @@ export default function RecipeList() {
           {renderPageNumbers(
             recipeList.currentPage,
             recipeList.totalPages,
-            handlePageChange
+            fetchRecipes
           ).map((pageNumber) => pageNumber)}
           {recipeList.currentPage < recipeList.totalPages && (
             <PaginationItem>
@@ -181,7 +177,7 @@ export default function RecipeList() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  handlePageChange(recipeList.currentPage + 1);
+                  fetchRecipes(recipeList.currentPage + 1);
                 }}
               />
             </PaginationItem>

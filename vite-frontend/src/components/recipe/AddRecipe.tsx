@@ -30,14 +30,14 @@ import {
 import { SelectTrigger, SelectValue } from "@radix-ui/react-select";
 
 const unitEnum = z.enum([
-  "KILOGRAM",
-  "GRAM",
-  "LITRE",
-  "CENTILITRE",
-  "MILLILITRE",
-  "TABLESPOON",
-  "TEASPOON",
-  "PIECE",
+  "kilogram",
+  "gram",
+  "litre",
+  "centilitre",
+  "millilitre",
+  "tablespoon",
+  "teaspoon",
+  "piece",
 ]);
 const MAX_FILE_SIZE: number = 5000000;
 const ACCEPTED_IMAGE_TYPES: string[] = [
