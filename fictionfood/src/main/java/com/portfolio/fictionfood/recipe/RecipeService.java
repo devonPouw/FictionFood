@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.recipe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.category.CategoryRepository;
 import com.portfolio.fictionfood.exception.UnauthorizedException;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,7 +33,6 @@ public class RecipeService {
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
-    private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
 
     public RecipeInfoDto getRecipeByIdAndUser(long id, User currentUser) throws UnauthorizedException {
@@ -86,15 +83,14 @@ public class RecipeService {
         return response;
     }
 
-    public Recipe postRecipe(String recipeJson, MultipartFile image, Principal principal) throws IOException {
-        PostRecipeDto recipeDto = objectMapper.readValue(recipeJson, PostRecipeDto.class);
+    public Recipe postRecipe(PostRecipeDto recipeDto, MultipartFile image, User currentUser) throws IOException {
 
         var recipe = new Recipe();
         recipe.setTitle(recipeDto.getTitle());
         recipe.setSummary(recipeDto.getSummary());
         recipe.setContent(recipeDto.getContent());
         recipe.setIsPublished(recipeDto.getIsPublished());
-        recipe.setAuthor(userRepository.findByUsername(principal.getName()).orElseThrow());
+        recipe.setAuthor(currentUser);
         recipe.setRating(BigDecimal.valueOf(0.0));
         recipe.setDatePublished(LocalDateTime.now());
 //                  recipe.setAmountOfReviews(0);
@@ -130,6 +126,26 @@ public class RecipeService {
         recipeRepository.save(recipe);
         imageService.uploadImage(image, recipe);
         recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
+
+        return recipeRepository.save(recipe);
+    }
+
+    public Recipe updateRecipe(Recipe updatedRecipe, MultipartFile image) throws IOException {
+        Recipe recipe = recipeRepository.findById(updatedRecipe.getId()).orElseThrow();
+
+        if (!recipe.getTitle().equals(updatedRecipe.getTitle())) {
+            recipe.setTitle(updatedRecipe.getTitle());
+        }
+        if (!recipe.getSummary().equals(updatedRecipe.getSummary())) {
+            recipe.setSummary(updatedRecipe.getSummary());
+        }
+        if (!recipe.getContent().equals(updatedRecipe.getContent())) {
+            recipe.setContent(updatedRecipe.getContent());
+        }
+        if (!Arrays.equals(recipe.getImage().getImageData(), image.getBytes())) {
+            imageService.uploadImage(image, recipe);
+            recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
+        }
 
         return recipeRepository.save(recipe);
     }

@@ -20,11 +20,6 @@ public class ImageController {
     private final ImageService imageService;
     private final RecipeRepository recipeRepository;
 
-//    @PostMapping
-//    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
-//        String uploadImage = imageService.uploadRecipeImage(file);
-//        return ResponseEntity.status(HttpStatus.OK).body(uploadImage);
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> downloadImage(@PathVariable long id) {
