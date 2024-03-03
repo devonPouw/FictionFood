@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.authentication.token;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,25 +11,21 @@ import lombok.extern.jackson.Jacksonized;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
+@Entity(name = "REFRESH_TOKEN")
 public class Token {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false, unique = true)
     private String token;
-
-    @Enumerated(EnumType.STRING)
-    private TokenType tokenType;
-
-    private boolean revoked;
 
     private boolean expired;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    private User user;
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
 }

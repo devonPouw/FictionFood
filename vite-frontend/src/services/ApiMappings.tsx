@@ -1,5 +1,5 @@
 import { IRecipeData, IRecipeList } from "@/types/Recipe";
-import axios from "axios";
+import http from "./api";
 
 export const backendApi = {
   register,
@@ -38,38 +38,6 @@ function getRecipeById(id: number) {
 function postRecipe(formData: FormData) {
   return http.post("/recipes", formData);
 }
-
-const http = axios.create({
-  baseURL: import.meta.env.VITE_HTTPS_BACKEND,
-  // withCredentials: true,
-});
-
-http.interceptors.request.use(
-  function (config) {
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken = parseJwt(token);
-        if (decodedToken && Date.now() <= decodedToken.exp * 1000) {
-          config.headers.Authorization = `Bearer ${token}`;
-        } else {
-          // Token is expired or invalid, remove it from sessionStorage
-          sessionStorage.removeItem("token");
-          // Optionally, redirect to login or handle token expiration appropriately here
-          console.error("Token expired. Please login again.");
-        }
-      } catch (error) {
-        console.error("Token not found", error);
-        sessionStorage.removeItem("token");
-      }
-    }
-
-    return config;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
 
 export function parseJwt(token: string) {
   try {

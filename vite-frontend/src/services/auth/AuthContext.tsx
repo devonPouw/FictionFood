@@ -1,21 +1,15 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-} from "react";
+import React, { createContext, useState, ReactNode, useCallback } from "react";
 import { AccountType, accountType } from "@/services/Paths";
 import { IUser } from "@/types/User";
 import { parseJwt } from "../ApiMappings";
+import { removeRefreshToken } from "../auth/cookieHelper";
 
 interface AuthContextProps {
   user: IUser | null;
   userIsAuthenticated: () => boolean;
-  userLogin: (token: string) => void;
+  userLogin: (token: string, refreshToken: string) => void;
   userLogout: () => void;
   getAccountType: () => AccountType;
-  getToken: () => string | null;
 }
 
 const AuthContext = createContext<AuthContextProps | null>(null);
@@ -28,7 +22,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<IUser | null>(null);
 
   const userLogout = useCallback((): void => {
-    sessionStorage.removeItem("token");
+    removeRefreshToken();
     setUser(null);
   }, []);
 
@@ -39,29 +33,22 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log("Token is undefined or null, aborting login.");
         return;
       }
+      console.table("token = " + token);
       const decodedToken = parseJwt(token);
       if (decodedToken && decodedToken.exp > Date.now() / 1000) {
         setUser(decodedToken as IUser);
       } else {
-        userLogout(); // Ensure this doesn't lead to a state where logout could get called before the component is fully mounted
+        userLogout();
       }
     },
     [userLogout]
   );
 
-  useEffect(() => {
-    const storedToken = sessionStorage.getItem("token");
-    if (storedToken) {
-      loginUserWithToken(storedToken);
-    }
-  }, [loginUserWithToken]);
-
   const userIsAuthenticated = useCallback((): boolean => !!user, [user]);
 
   const userLogin = useCallback(
-    (token: string): void => {
-      sessionStorage.setItem("token", token);
-      loginUserWithToken(token);
+    (accessToken: string): void => {
+      loginUserWithToken(accessToken);
     },
     [loginUserWithToken]
   );
@@ -71,18 +58,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [user]
   );
 
-  const getToken = useCallback(
-    (): string | null => sessionStorage.getItem("token"),
-    []
-  );
-
   const contextValue: AuthContextProps = {
     user,
     userIsAuthenticated,
     userLogin,
     userLogout,
     getAccountType,
-    getToken,
   };
 
   return (

@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 
-@Entity
+@Entity(name = "RECIPE_IMAGE")
 @Getter
 @Setter
 @Builder
@@ -17,7 +17,6 @@ public class RecipeImage extends Image {
     @OneToOne
     @JsonBackReference
     private Recipe recipe;
-
     @Override
     void setLink(Object object) {
         recipe = (Recipe) object;

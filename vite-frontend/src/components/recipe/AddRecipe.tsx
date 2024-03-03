@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import * as z from "zod";
 import { backendApi } from "@/services/ApiMappings";
-import { useAuth } from "@/services/auth/useAuth";
 import { IRecipeIngredientData } from "@/types/Recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
@@ -90,7 +89,6 @@ const AddRecipe: React.FC = () => {
   const [newCategory, setNewCategory] = useState<string>("");
   const [imageSelected, setImageSelected] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const { getToken } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -171,12 +169,6 @@ const AddRecipe: React.FC = () => {
   const handlePostRecipe = async () => {
     setMessage("");
     setLoading(true);
-    const token = getToken();
-    if (token === null) {
-      navigate("/login");
-      setLoading(false);
-      return;
-    }
     const formData = new FormData();
     const {
       title,

@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 
-@Entity
+@Entity(name = "USER_IMAGE")
 @Getter
 @Setter
 @Builder

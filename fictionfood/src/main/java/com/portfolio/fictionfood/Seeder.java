@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -49,6 +50,8 @@ public class Seeder implements CommandLineRunner {
         var recipe3 = new Recipe();
         var recipe4 = new Recipe();
 
+        recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2, recipe3, recipe4));
+
         MultipartFile[] image;
         image = new MultipartFile[]{
                 imageService.seedImage("src/pasta.jpg"),
@@ -58,8 +61,6 @@ public class Seeder implements CommandLineRunner {
                 imageService.seedImage("src/pizza-margarita.jpg"),
                 imageService.seedImage("src/IMG_4498.jpg"),
         };
-
-        recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2, recipe3, recipe4));
 
         var user = User.builder()
                 .nickname("GordonRamsay")

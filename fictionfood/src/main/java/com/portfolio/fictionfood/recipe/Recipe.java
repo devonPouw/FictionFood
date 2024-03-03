@@ -39,7 +39,7 @@ public class Recipe {
     private BigDecimal rating;
 
     //    private Set<User> amountOfReviews;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonManagedReference
     private RecipeImage image;
     //    @NonNull
@@ -61,7 +61,7 @@ public class Recipe {
     @Column(columnDefinition = "TIMESTAMP(0)")
     private LocalDateTime datePublished;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe")
     @JsonManagedReference
     private Set<RecipeIngredient> recipeIngredients;
 }

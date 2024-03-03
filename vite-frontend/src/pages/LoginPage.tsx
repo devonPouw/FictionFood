@@ -30,16 +30,16 @@ const Login: React.FC = () => {
     setMessage("");
     setLoading(true);
     try {
+      console.log("backendApi object:", backendApi);
       const response = await backendApi.login(username, password);
-      const accessToken = response.data.accessToken;
-      console.table(response.data);
+      console.log(response);
 
-      Auth.userLogin(accessToken);
+      Auth.userLogin(response.data.accessToken, response.data.refreshToken);
       setLoading(false);
       navigate("/");
       setMessage(response.data.message);
     } catch (error) {
-      console.log(error);
+      console.error("Login error:", error);
     }
   };
 
