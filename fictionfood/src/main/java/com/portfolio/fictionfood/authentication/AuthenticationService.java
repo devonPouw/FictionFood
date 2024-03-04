@@ -7,7 +7,6 @@ import com.portfolio.fictionfood.authentication.token.TokenType;
 import com.portfolio.fictionfood.config.JwtService;
 import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
-import com.portfolio.fictionfood.recipe.PostRecipeDto;
 import com.portfolio.fictionfood.user.User;
 import com.portfolio.fictionfood.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,20 +28,19 @@ public class AuthenticationService {
     private final UserRepository repository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final ObjectMapper objectMapper;
     private final JwtService jwtService;
     private final ImageService imageService;
     private final AuthenticationManager authenticationManager;
     private final ImageRepository imageRepository;
 
-    public AuthenticationResponse register(String registerJson, MultipartFile avatar) throws IOException {
-        RegisterRequest request = objectMapper.readValue(registerJson, RegisterRequest.class);
+    public AuthenticationResponse register(RegisterRequest request, MultipartFile avatar) throws IOException {
+
         var user = new User();
-                user.setNickname(request.getNickname());
-                user.setUsername(request.getUsername());
-                user.setEmail(request.getEmail());
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-                user.setRole(request.getRole());
+        user.setNickname(request.getNickname());
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
         repository.save(user);
         imageService.uploadImage(avatar, user);
         user.setAvatar(imageRepository.findByUser(user).orElseThrow());

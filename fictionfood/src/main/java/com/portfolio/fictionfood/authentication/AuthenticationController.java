@@ -1,7 +1,6 @@
 package com.portfolio.fictionfood.authentication;
 
-import com.portfolio.fictionfood.recipe.Recipe;
-import com.portfolio.fictionfood.recipe.RecipeController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.fictionfood.user.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,23 +20,26 @@ import java.io.IOException;
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
     private final AuthenticationService service;
     private final UserRepository repository;
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(
             @RequestPart("register") String registerJson,
             @RequestPart("avatar") MultipartFile avatar
     ) {
-//        if (repository.existsByUsername(request.getUsername())) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        } else if (repository.existsByEmail(request.getEmail())) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        } else if (repository.existsByNickname(request.getNickname())) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-        try{
-            AuthenticationResponse registerRequest = service.register(registerJson, avatar);
+        try {
+            RegisterRequest request = objectMapper.readValue(registerJson, RegisterRequest.class);
+            if (repository.existsByUsername(request.getUsername())) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else if (repository.existsByEmail(request.getEmail())) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else if (repository.existsByNickname(request.getNickname())) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            AuthenticationResponse registerRequest = service.register(request, avatar);
             logger.info("User successfully registered with username: {}", registerJson.split(":")[1].split(",")[0]);
             return ResponseEntity.status(HttpStatus.CREATED).body(registerRequest);
         } catch (IOException e) {
