@@ -1,6 +1,5 @@
 package com.portfolio.fictionfood.image;
 
-import com.portfolio.fictionfood.recipe.RecipeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,8 +17,6 @@ import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 public class ImageController {
 
     private final ImageService imageService;
-    private final RecipeRepository recipeRepository;
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> downloadImage(@PathVariable long id) {
