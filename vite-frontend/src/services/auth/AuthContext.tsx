@@ -12,7 +12,7 @@ import { parseJwt } from "../ApiMappings";
 interface AuthContextProps {
   user: IUser | null;
   userIsAuthenticated: () => boolean;
-  userLogin: (token: string) => void;
+  userLogin: (accessToken: string, refreshToken: string) => void;
   userLogout: () => void;
   getAccountType: () => AccountType;
   getToken: () => string | null;
@@ -59,9 +59,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const userIsAuthenticated = useCallback((): boolean => !!user, [user]);
 
   const userLogin = useCallback(
-    (token: string): void => {
-      sessionStorage.setItem("token", token);
-      loginUserWithToken(token);
+    (accessToken: string, refreshToken: string): void => {
+      sessionStorage.setItem("token", accessToken);
+      localStorage.setItem("refreshToken", refreshToken);
+      loginUserWithToken(accessToken);
     },
     [loginUserWithToken]
   );

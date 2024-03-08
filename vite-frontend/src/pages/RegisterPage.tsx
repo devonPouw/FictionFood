@@ -106,9 +106,8 @@ const Register: React.FC = () => {
     }
     try {
       const response = await backendApi.register(formData);
-      const { accessToken } = response.data;
 
-      Auth.userLogin(accessToken);
+      Auth.userLogin(response.data.accessToken, response.data.refreshToken);
       setSuccessful(true);
       navigate("/");
       window.location.reload();

@@ -5,6 +5,7 @@ export const backendApi = {
   register,
   login,
   logout,
+  refreshToken,
   getAllRecipes,
   getRecipeById,
   postRecipe,
@@ -25,6 +26,10 @@ function logout() {
   return http.get("/auth/logout");
 }
 
+function refreshToken(refreshToken: string | null) {
+  return basicHttp.post("/auth/refresh-token", { refreshToken });
+}
+
 function getAllRecipes(page: number, amount: number) {
   return http.get<IRecipeList>(
     "/recipes" + "?page=" + page + "&size=" + amount
@@ -39,34 +44,49 @@ function postRecipe(formData: FormData) {
   return http.post("/recipes", formData);
 }
 
-const http = axios.create({
-  baseURL: import.meta.env.VITE_HTTPS_BACKEND,
-  // withCredentials: true,
-});
+const baseURL = import.meta.env.VITE_HTTPS_BACKEND;
+const http = axios.create({ baseURL });
+const basicHttp = axios.create({ baseURL });
 
 http.interceptors.request.use(
   function (config) {
     const token = sessionStorage.getItem("token");
-    if (token) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (token && refreshToken) {
       try {
-        const decodedToken = parseJwt(token);
-        if (decodedToken && Date.now() <= decodedToken.exp * 1000) {
-          config.headers.Authorization = `Bearer ${token}`;
-        } else {
-          // Token is expired or invalid, remove it from sessionStorage
-          sessionStorage.removeItem("token");
-          // Optionally, redirect to login or handle token expiration appropriately here
-          console.error("Token expired. Please login again.");
-        }
+        config.headers.Authorization = `Bearer ${token}`;
       } catch (error) {
-        console.error("Token not found", error);
-        sessionStorage.removeItem("token");
+        console.error(error);
       }
     }
-
     return config;
   },
   function (error) {
+    return Promise.reject(error);
+  }
+);
+
+http.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      return backendApi
+        .refreshToken(localStorage.getItem("refreshToken"))
+        .then((res) => {
+          originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+          sessionStorage.setItem("token", res.data.accessToken);
+          localStorage.setItem("refreshToken", res.data.refreshToken);
+          return http(originalRequest);
+        })
+        .catch((refreshError) => {
+          console.error("Refresh token failed:", refreshError);
+          sessionStorage.removeItem("token");
+          return Promise.reject(error);
+        });
+    }
+
     return Promise.reject(error);
   }
 );

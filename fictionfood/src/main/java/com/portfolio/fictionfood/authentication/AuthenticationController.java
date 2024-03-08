@@ -1,9 +1,8 @@
 package com.portfolio.fictionfood.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.portfolio.fictionfood.authentication.token.RefreshTokenDto;
 import com.portfolio.fictionfood.user.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,10 +55,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
-        service.refreshToken(request, response);
+    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenDto refreshTokenDTO)  {
+        logger.info("Issuing new refresh token");
+       return new ResponseEntity<>(service.refreshToken(refreshTokenDTO), HttpStatus.OK) ;
     }
 }
