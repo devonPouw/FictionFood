@@ -32,7 +32,6 @@ const Login: React.FC = () => {
     try {
       const response = await backendApi.login(username, password);
       console.table(response.data);
-
       Auth.userLogin(response.data.accessToken, response.data.refreshToken);
       setLoading(false);
       navigate("/");

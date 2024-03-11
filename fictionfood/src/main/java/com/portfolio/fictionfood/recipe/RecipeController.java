@@ -80,7 +80,6 @@ public class RecipeController {
             logger.warn("User: {} is not allowed to post more recipes", currentUser.getUsername());
             return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
         }
-
         try {
             PostRecipeDto recipeDto = objectMapper.readValue(recipeJson, PostRecipeDto.class);
             Recipe recipe = recipeService.postRecipe(recipeDto, image, currentUser);

@@ -21,7 +21,7 @@ public class Token {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "refresh_token",nullable = false, unique = true)
     private String token;
 
     @Enumerated(EnumType.STRING)

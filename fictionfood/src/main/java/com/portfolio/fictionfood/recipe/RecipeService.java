@@ -33,7 +33,6 @@ public class RecipeService {
     private final ImageRepository imageRepository;
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
-    private final UserRepository userRepository;
 
     public RecipeInfoDto getRecipeByIdAndUser(long id, User currentUser) throws UnauthorizedException {
         var recipe = recipeRepository.findById(id).orElseThrow();
