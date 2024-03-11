@@ -1,4 +1,5 @@
 HELP.md
+tasks.md
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
@@ -41,3 +42,4 @@ out/
 /src/main/resources/key.pem
 /src/main/resources/keystore.p12
 /src/main/resources/cert.pem
+!/tasks.md
