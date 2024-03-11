@@ -202,7 +202,6 @@ const AddRecipe: React.FC = () => {
     }
     try {
       const response = await backendApi.postRecipe(formData);
-      console.log(response);
       setLoading(false);
       navigate("/");
       setMessage(response.data);

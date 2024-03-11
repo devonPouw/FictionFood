@@ -14,7 +14,6 @@ export default function Recipe() {
   const fetchRecipe = async () => {
     try {
       const response = await backendApi.getRecipeById(Number(id));
-      console.log(response.data);
       setRecipe(response.data);
     } catch (error) {
       console.error(error);
