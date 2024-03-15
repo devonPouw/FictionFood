@@ -70,6 +70,21 @@ public class RecipeController {
         }
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getAllRecipesByUser(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size) {
+        logger.info("Fetching all published recipes, page: {}, size: {}", page, size);
+
+        try {
+            Map<String, Object> response = recipeService.getAllPublishedRecipes(page, size);
+            logger.debug("Fetched {} recipes for page: {}", response.get("totalItems"), page);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            logger.error("Error fetching recipes", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<String> postRecipe(@RequestPart("recipe") String recipeJson,
                                         @RequestPart("image") MultipartFile image,

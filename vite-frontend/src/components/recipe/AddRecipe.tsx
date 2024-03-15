@@ -127,7 +127,11 @@ const AddRecipe: React.FC = () => {
       { ...newIngredient, quantity: quantity.toString() },
     ]);
 
-    setNewIngredient({ ingredient: "", quantity: "", unit: "" });
+    setNewIngredient({
+      ingredient: "",
+      quantity: "",
+      unit: newIngredient.unit,
+    });
   };
 
   const removeIngredientAtIndex = (index: number) => {
