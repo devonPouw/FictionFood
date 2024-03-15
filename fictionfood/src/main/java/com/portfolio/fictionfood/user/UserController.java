@@ -42,8 +42,12 @@ public class UserController {
             @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal User currentUser
     ) {
-        userService.changePassword(request, currentUser);
-        return ResponseEntity.status(HttpStatus.OK).body("Password successfully changed!");
+        try {
+            userService.changePassword(request, currentUser);
+            return ResponseEntity.status(HttpStatus.OK).body("Password successfully changed!");
+        }catch (IllegalStateException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
     @PatchMapping("/profile/avatar")
     public ResponseEntity<?> changeAvatar(@RequestPart("image") MultipartFile image, @AuthenticationPrincipal User currentUser){

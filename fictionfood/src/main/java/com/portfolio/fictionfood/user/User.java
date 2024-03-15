@@ -18,9 +18,7 @@ import java.util.Collection;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "USERS", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"nickname", "username"})
-})
+@Table(name = "USERS")
 public class User implements UserDetails {
 
     @Id
@@ -32,7 +30,6 @@ public class User implements UserDetails {
     private String username;
 
     @NonNull
-    @Column(unique = true)
     private String email;
 
     @NonNull

@@ -38,7 +38,7 @@ public class RecipeService {
         var recipe = recipeRepository.findById(id).orElseThrow();
         if (currentUser == null || currentUser.getRole().equals(UserRole.CHEF))
             if (!recipe.getAuthor().equals(currentUser) && !recipe.getIsPublished()) {
-                throw new UnauthorizedException("User is not authorized to access this recipe");
+                throw new UnauthorizedException("User is not authorized to access this recipe"); //has to be forbidden
             }
 
         return RecipeInfoDto.builder()
