@@ -56,7 +56,9 @@ const Login: React.FC = () => {
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigate("/profile/change-password")}
+              >
                 Change password
                 <DropdownMenuShortcut>⌘K</DropdownMenuShortcut>
               </DropdownMenuItem>
@@ -70,7 +72,9 @@ const Login: React.FC = () => {
                     <DropdownMenuItem>Finished</DropdownMenuItem>
                     <DropdownMenuItem>Editing...</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>Create new</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/recipes/new")}>
+                      Create new
+                    </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>

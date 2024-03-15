@@ -19,3 +19,14 @@ export interface ILoginData {
     username: string,
     password: string,
 }
+export interface IChangePasswordData{
+    currentPassword: string;
+    newPassword: string;
+    confirmationPassword: string;
+}
+export interface IProfileData{
+    nickname: string;
+    email: string;
+    role: AccountType;
+    avatarId: number;
+}

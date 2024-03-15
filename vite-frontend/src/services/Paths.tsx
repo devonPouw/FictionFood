@@ -1,10 +1,11 @@
-import Profile from "@/components/auth/Profile";
+import Profile from "@/pages/Profile";
 import AddRecipe from "@/components/recipe/AddRecipe";
 import RecipeList from "@/components/recipe/RecipeList";
 import Home from "@/pages/Home";
 import Login from "@/pages/LoginPage";
 import Recipe from "@/pages/Recipe";
 import Register from "@/pages/RegisterPage";
+import ChangePassword from "@/components/auth/ChangePassword";
 
 export type AccountType = "MODERATOR" | "CHEF" | "VISITOR";
 
@@ -37,6 +38,11 @@ export const navList = [
     path: "/profile",
     allowedAccountTypes: loggedInTypes,
     element: () => <Profile />,
+  },
+  {
+    path: "/profile/change-password",
+    allowedAccountTypes: loggedInTypes,
+    element: () => <ChangePassword />,
   },
   {
     path: "/recipes",

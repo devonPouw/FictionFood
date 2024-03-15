@@ -5,6 +5,9 @@ export const backendApi = {
   register,
   login,
   logout,
+  getProfile,
+  changePassword,
+  changeAvatar,
   refreshToken,
   getAllRecipes,
   getRecipeById,
@@ -24,6 +27,26 @@ function login(username: string, password: string) {
 
 function logout() {
   return http.get("/auth/logout");
+}
+
+function getProfile() {
+  return http.get("/user/profile");
+}
+
+function changePassword(
+  currentPassword: string,
+  newPassword: string,
+  confirmationPassword: string
+) {
+  return http.patch("/user/profile/password", {
+    currentPassword,
+    newPassword,
+    confirmationPassword,
+  });
+}
+
+function changeAvatar() {
+  return http.patch("/user/profile/avatar");
 }
 
 function refreshToken(refreshToken: string | null) {

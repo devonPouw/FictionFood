@@ -129,7 +129,8 @@ public class RecipeService {
         return recipeRepository.save(recipe);
     }
 
-    public Recipe updateRecipe(Recipe updatedRecipe, MultipartFile image) throws IOException {
+    public void updateRecipe(RecipeInfoDto updatedRecipe, MultipartFile image) throws IOException {
+
         Recipe recipe = recipeRepository.findById(updatedRecipe.getId()).orElseThrow();
 
         if (!recipe.getTitle().equals(updatedRecipe.getTitle())) {
@@ -145,7 +146,6 @@ public class RecipeService {
             imageService.uploadImage(image, recipe);
             recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
         }
-
-        return recipeRepository.save(recipe);
+       recipeRepository.save(recipe);
     }
 }
