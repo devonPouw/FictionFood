@@ -6,17 +6,28 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosError } from "axios";
 
 export default function Recipe() {
   const [recipe, setRecipe] = useState<IRecipeData | null>(null);
   const { id } = useParams<{ id: string }>();
+  const { toast } = useToast();
 
   const fetchRecipe = async () => {
     try {
       const response = await backendApi.getRecipeById(Number(id));
       setRecipe(response.data);
     } catch (error) {
-      console.error(error);
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.data
+      ) {
+        toast({
+          description: error.response.data.message,
+        });
+      }
     }
   };
   useEffect(() => {

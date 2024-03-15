@@ -17,27 +17,38 @@ import { useState } from "react";
 import { useAuth } from "@/services/auth/useAuth";
 import { backendApi } from "@/services/ApiMappings";
 import { ILoginData } from "@/types/User";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosError } from "axios";
 
 const Login: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
+  const { toast } = useToast();
   const Auth = useAuth();
 
   const handleLogin = async (formValue: ILoginData) => {
     const { username, password } = formValue;
-    setMessage("");
     setLoading(true);
+
     try {
       const response = await backendApi.login(username, password);
-      console.table(response.data);
-      Auth.userLogin(response.data.accessToken, response.data.refreshToken);
       setLoading(false);
+      toast({
+        description: "Successfully logged in!",
+      });
+      Auth.userLogin(response.data.accessToken, response.data.refreshToken);
       navigate("/");
-      setMessage(response.data.message);
     } catch (error) {
-      console.log(error);
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.data
+      ) {
+        toast({
+          description: error.response.data.message,
+        });
+      }
     }
   };
 
@@ -128,11 +139,6 @@ const Login: React.FC = () => {
                       <span className="spinner-border spinner-border-sm"></span>
                     )}
                   </div>
-                  {message && (
-                    <div className="form-group text-center text-red-700">
-                      {message}
-                    </div>
-                  )}
                 </div>
               </div>
             </form>

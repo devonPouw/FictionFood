@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import * as z from "zod";
 import { backendApi } from "@/services/ApiMappings";
-import { useAuth } from "@/services/auth/useAuth";
 import { IRecipeIngredientData } from "@/types/Recipe";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +27,8 @@ import {
   SelectLabel,
 } from "../ui/select";
 import { SelectTrigger, SelectValue } from "@radix-ui/react-select";
+import { AxiosError } from "axios";
+import { useToast } from "../ui/use-toast";
 
 const unitEnum = z.enum([
   "kilogram",
@@ -81,16 +82,15 @@ const formSchema = z.object({
 const AddRecipe: React.FC = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
   const [newIngredient, setNewIngredient] = useState<IRecipeIngredientData>({
     ingredient: "",
     quantity: "",
-    unit: "GRAM",
+    unit: "",
   });
   const [newCategory, setNewCategory] = useState<string>("");
   const [imageSelected, setImageSelected] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const { getToken } = useAuth();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -127,7 +127,7 @@ const AddRecipe: React.FC = () => {
       { ...newIngredient, quantity: quantity.toString() },
     ]);
 
-    setNewIngredient({ ingredient: "", quantity: "", unit: "GRAM" });
+    setNewIngredient({ ingredient: "", quantity: "", unit: "" });
   };
 
   const removeIngredientAtIndex = (index: number) => {
@@ -169,14 +169,7 @@ const AddRecipe: React.FC = () => {
   });
 
   const handlePostRecipe = async () => {
-    setMessage("");
     setLoading(true);
-    const token = getToken();
-    if (token === null) {
-      navigate("/login");
-      setLoading(false);
-      return;
-    }
     const formData = new FormData();
     const {
       title,
@@ -204,9 +197,19 @@ const AddRecipe: React.FC = () => {
       const response = await backendApi.postRecipe(formData);
       setLoading(false);
       navigate("/");
-      setMessage(response.data);
+      toast({
+        description: response.data,
+      });
     } catch (error) {
-      console.log(error);
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.data
+      ) {
+        toast({
+          description: error.response.data.message,
+        });
+      }
     }
   };
 
@@ -410,13 +413,13 @@ const AddRecipe: React.FC = () => {
               </div>
               {imageSelected ? (
                 imageUrl && (
-                  <div
-                    className="h-40 w-40"
-                    style={{
-                      backgroundImage: `url(${imageUrl})`,
-                      backgroundSize: "cover",
-                    }}
-                  ></div>
+                  <div className="w-1/2">
+                    <img
+                      className="w-1/2 aspect-square object-contain"
+                      src={imageUrl}
+                      alt=""
+                    />
+                  </div>
                 )
               ) : (
                 <div></div>
@@ -440,11 +443,6 @@ const AddRecipe: React.FC = () => {
                       <span className="spinner-border spinner-border-sm"></span>
                     )}
                   </div>
-                  {message && (
-                    <div className="form-group text-center text-red-700">
-                      {message}
-                    </div>
-                  )}
                 </div>
               </div>
             </form>
