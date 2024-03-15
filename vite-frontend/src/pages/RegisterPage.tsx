@@ -120,8 +120,8 @@ const Register: React.FC = () => {
     }
   };
   return (
-    <div className="w-screen h-screen flex flex-col">
-      <div className="container h-1/4">
+    <div className="w-full h-full flex flex-col">
+      <div className="container h-1/4 pt-3">
         <div className="flex h-1/2 items-center justify-center text-4xl">
           <Link to={"/"}>
             <span className="font-bold hover:text-muted-foreground">
@@ -213,13 +213,13 @@ const Register: React.FC = () => {
               </div>
               {imageSelected ? (
                 imageUrl && (
-                  <div
-                    className="h-40 w-40"
-                    style={{
-                      backgroundImage: `url(${imageUrl})`,
-                      backgroundSize: "cover",
-                    }}
-                  ></div>
+                  <div className="w-1/2">
+                    <img
+                      className="w-1/2 aspect-square object-contain"
+                      src={imageUrl}
+                      alt=""
+                    />
+                  </div>
                 )
               ) : (
                 <div></div>

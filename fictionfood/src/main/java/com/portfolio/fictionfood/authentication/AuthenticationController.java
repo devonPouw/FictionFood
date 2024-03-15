@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,14 +34,12 @@ public class AuthenticationController {
         try {
             RegisterRequest request = objectMapper.readValue(registerJson, RegisterRequest.class);
             if (repository.existsByUsername(request.getUsername())) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            } else if (repository.existsByEmail(request.getEmail())) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already in use");
             } else if (repository.existsByNickname(request.getNickname())) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nickname already in use");
             }
             AuthenticationResponse registerRequest = service.register(request, avatar);
-            logger.info("User successfully registered with username: {}", registerJson.split(":")[1].split(",")[0]);
+            logger.info("User successfully registered with username: {}", request.getUsername());
             return ResponseEntity.status(HttpStatus.CREATED).body(registerRequest);
         } catch (IOException e) {
             logger.error("Error registering user", e);
@@ -48,10 +48,16 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(
+    public ResponseEntity<?> login(
             @RequestBody LoginRequest request
     ) {
-        return new ResponseEntity<>(service.login(request), HttpStatus.OK);
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(service.login(request));
+        }catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
     }
 
     @PostMapping("/refresh-token")

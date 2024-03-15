@@ -35,22 +35,23 @@ public class RecipeController {
     int maxRecipesPerMonth;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getRecipeById(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<RecipeInfoDto> getRecipeById(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         logger.info("Request received to fetch recipe with id: {}", id);
         try {
             RecipeInfoDto recipeInfo = recipeService.getRecipeByIdAndUser(id, currentUser);
             if (recipeInfo == null) {
                 logger.warn("No recipe found with id: {}", id);
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
             logger.debug("Returning recipe details for id: {}", id);
-            return ResponseEntity.ok(recipeInfo);
-        } catch (UnauthorizedException e) {
+            return ResponseEntity.status(HttpStatus.OK).body(recipeInfo);
+        }catch (UnauthorizedException e) {
+            logger.error("Error fetching recipe with id, user unauthorized: " + id, e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        catch (Exception e) {
             logger.error("Error fetching recipe with id: " + id, e);
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            logger.error("Error fetching recipe with id: " + id, e);
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -62,15 +63,15 @@ public class RecipeController {
         try {
             Map<String, Object> response = recipeService.getAllPublishedRecipes(page, size);
             logger.debug("Fetched {} recipes for page: {}", response.get("totalItems"), page);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             logger.error("Error fetching recipes", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> postRecipe(@RequestPart("recipe") String recipeJson,
+    public ResponseEntity<String> postRecipe(@RequestPart("recipe") String recipeJson,
                                         @RequestPart("image") MultipartFile image,
                                         @AuthenticationPrincipal User currentUser) {
 
@@ -78,7 +79,7 @@ public class RecipeController {
 
         if (!checkIfAllowedToPost(SecurityContextHolder.getContext().getAuthentication())) {
             logger.warn("User: {} is not allowed to post more recipes", currentUser.getUsername());
-            return new ResponseEntity<>(HttpStatus.TOO_MANY_REQUESTS);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You are not allowed to post more recipes this month");
         }
         try {
             PostRecipeDto recipeDto = objectMapper.readValue(recipeJson, PostRecipeDto.class);
@@ -87,7 +88,7 @@ public class RecipeController {
             return ResponseEntity.status(HttpStatus.CREATED).body("Recipe successfully created!");
         } catch (IOException e) {
             logger.error("Error posting recipe", e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -96,13 +97,13 @@ public class RecipeController {
                                           @RequestPart MultipartFile image,
                                           @AuthenticationPrincipal User currentUser) {
         try {
-            Recipe updatedRecipe = objectMapper.readValue(recipeJson, Recipe.class);
+            RecipeInfoDto updatedRecipe = objectMapper.readValue(recipeJson, RecipeInfoDto.class);
             if (!recipeRepository.findById(updatedRecipe.getId()).orElseThrow().getAuthor().equals(currentUser)) {
                 logger.warn("User: {} tried to edit a recipe which did not belong to them", currentUser.getUsername());
                 throw new UnauthorizedException("You are not authorized to edit this recipe");
             }
-            Recipe recipe = recipeService.updateRecipe(updatedRecipe, image);
-            logger.info("Recipe successfully edited with ID: {}", recipe.getId());
+            recipeService.updateRecipe(updatedRecipe, image);
+            logger.info("Recipe successfully edited with ID: {}", updatedRecipe.getId());
             return ResponseEntity.status(HttpStatus.OK).body("Recipe successfully updated!");
         } catch (UnauthorizedException u) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(u);
