@@ -14,14 +14,14 @@ export default function NavBar() {
           </span>
         </Link>
       </div>
-      <div className="container flex h-14 items-center font-bold">
+      <div className="container h-14 items-center font-bold hidden lg:flex">
         <Link to={"/recipes/new"}>
           <div className="container inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground py-2 px-0 font-bold">
             <span className="px-3">New Recipe</span>
           </div>
         </Link>
       </div>
-      <div className="container flex h-14 items-center font-bold">
+      <div className="container h-14 items-center font-bold hidden lg:flex">
         <Link to={"/recipes"}>
           <div className="container inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground py-2 px-0 font-bold">
             <span className="px-3">All Recipes</span>

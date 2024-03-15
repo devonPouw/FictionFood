@@ -21,7 +21,7 @@ const RecipePreview: React.FC<RecipePreviewProps> = ({ recipeList }) => {
     <div>loading...</div>
   ) : (
     <div className="w-full h-auto flex justify-center dark:text-white">
-      <div className="w-3/4 grid py-4 gap-6 grid-cols-3 justify-items-center">
+      <div className="w-3/4 grid py-4 gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
         {recipes.map((recipe) => (
           <div
             className="h-auto w-full px-4 py-4 rounded-xl border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30"
