@@ -15,15 +15,16 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { AxiosError } from "axios";
+import { useToast } from "../ui/use-toast";
 
 const ChangePassword = () => {
   const navigate: NavigateFunction = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
+  const { toast } = useToast();
 
   const handleChangePassword = async (formValue: IChangePasswordData) => {
     const { currentPassword, newPassword, confirmationPassword } = formValue;
-    setMessage("");
     setLoading(true);
     try {
       const response = await backendApi.changePassword(
@@ -32,10 +33,20 @@ const ChangePassword = () => {
         confirmationPassword
       );
       setLoading(false);
+      toast({
+        description: response.data,
+      });
       navigate("/");
-      setMessage(response.data.message);
     } catch (error) {
-      console.log(error);
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.data
+      ) {
+        toast({
+          description: error.response.data,
+        });
+      }
     }
   };
 
@@ -153,11 +164,6 @@ const ChangePassword = () => {
                       <span className="spinner-border spinner-border-sm"></span>
                     )}
                   </div>
-                  {message && (
-                    <div className="form-group text-center text-red-700">
-                      {message}
-                    </div>
-                  )}
                 </div>
               </div>
             </form>

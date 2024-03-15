@@ -17,6 +17,8 @@ import { Button } from "../components/ui/button";
 import { backendApi } from "@/services/ApiMappings";
 import { useAuth } from "@/services/auth/useAuth";
 import { useDropzone } from "react-dropzone";
+import { useToast } from "@/components/ui/use-toast";
+import { AxiosError } from "axios";
 
 const MAX_FILE_SIZE: number = 5000000;
 const ACCEPTED_IMAGE_TYPES: string[] = [
@@ -30,10 +32,9 @@ const Register: React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [successful, setSuccessful] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>("");
   const [imageSelected, setImageSelected] = useState<boolean>(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const { toast } = useToast();
   const Auth = useAuth();
 
   const formSchema = z
@@ -95,7 +96,6 @@ const Register: React.FC = () => {
   });
 
   const handleRegister = async () => {
-    setMessage("");
     setLoading(true);
     const formData = new FormData();
     const { role, nickname, username, email, password } = form.getValues();
@@ -106,17 +106,22 @@ const Register: React.FC = () => {
     }
     try {
       const response = await backendApi.register(formData);
-
+      toast({
+        description: "Successfully registered!",
+      });
       Auth.userLogin(response.data.accessToken, response.data.refreshToken);
-      setSuccessful(true);
-      navigate("/");
-      window.location.reload();
-      setMessage(response.data.message);
-    } catch (error) {
       setLoading(false);
-
-      setSuccessful(false);
-      console.log(error);
+      navigate("/");
+    } catch (error) {
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.data
+      ) {
+        toast({
+          description: error.response.data,
+        });
+      }
     }
   };
   return (
@@ -133,129 +138,116 @@ const Register: React.FC = () => {
       </div>
       <div className="container">
         <Form {...form}>
-          {!successful && (
-            <form
-              onSubmit={form.handleSubmit(handleRegister)}
-              className="space-y-8"
-            >
-              <FormField
-                control={form.control}
-                name="nickname"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nickname</FormLabel>
-                    <FormControl>
-                      <Input placeholder="nickname" {...field} />
-                    </FormControl>
-                    <FormMessage autoCorrect="false" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="given@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="username" {...field} />
-                    </FormControl>
-                    <FormMessage autoCorrect="false" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage autoCorrect="false" />
-                  </FormItem>
-                )}
-              />
-              <div
-                {...getRootProps()}
-                style={{
-                  border: "2px dashed #ddd",
-                  padding: "20px",
-                  textAlign: "center",
-                }}
-              >
-                <input {...getInputProps()} />
-                {isDragActive ? (
-                  <p>Drop the image here...</p>
-                ) : (
-                  <p>
-                    Drag 'n' drop an image here, or click to select an image
-                  </p>
-                )}
-              </div>
-              {imageSelected ? (
-                imageUrl && (
-                  <div className="w-1/2">
-                    <img
-                      className="w-1/2 aspect-square object-contain"
-                      src={imageUrl}
-                      alt=""
-                    />
-                  </div>
-                )
-              ) : (
-                <div></div>
+          <form
+            onSubmit={form.handleSubmit(handleRegister)}
+            className="space-y-8"
+          >
+            <FormField
+              control={form.control}
+              name="nickname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nickname</FormLabel>
+                  <FormControl>
+                    <Input placeholder="nickname" {...field} />
+                  </FormControl>
+                  <FormMessage autoCorrect="false" />
+                </FormItem>
               )}
-              <div className="w-full flex justify-center">
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="given@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="username" {...field} />
+                  </FormControl>
+                  <FormMessage autoCorrect="false" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="password" {...field} />
+                  </FormControl>
+                  <FormMessage autoCorrect="false" />
+                </FormItem>
+              )}
+            />
+            <div
+              {...getRootProps()}
+              style={{
+                border: "2px dashed #ddd",
+                padding: "20px",
+                textAlign: "center",
+              }}
+            >
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p>Drop the image here...</p>
+              ) : (
+                <p>Drag 'n' drop an image here, or click to select an image</p>
+              )}
+            </div>
+            {imageSelected ? (
+              imageUrl && (
+                <div className="w-1/2">
+                  <img
+                    className="w-1/2 aspect-square object-contain"
+                    src={imageUrl}
+                    alt=""
+                  />
+                </div>
+              )
+            ) : (
+              <div></div>
+            )}
+            <div className="w-full flex justify-center">
+              <div>
                 <div>
-                  <div>
-                    <Button
-                      className="w-32 md:24 border-2"
-                      type="submit"
-                      disabled={
-                        form.control._defaultValues.nickname ===
-                          form.getValues().nickname ||
-                        form.control._defaultValues.email ===
-                          form.getValues().email ||
-                        form.control._defaultValues.username ===
-                          form.getValues().username ||
-                        form.control._defaultValues.password ===
-                          form.getValues().password
-                      }
-                    >
-                      Register
-                    </Button>
-                    {loading && (
-                      <span className="spinner-border spinner-border-sm"></span>
-                    )}
-                  </div>
-                  {message && (
-                    <div className="form-group text-center text-red-700">
-                      {message}
-                    </div>
+                  <Button
+                    className="w-32 md:24 border-2"
+                    type="submit"
+                    disabled={
+                      form.control._defaultValues.nickname ===
+                        form.getValues().nickname ||
+                      form.control._defaultValues.email ===
+                        form.getValues().email ||
+                      form.control._defaultValues.username ===
+                        form.getValues().username ||
+                      form.control._defaultValues.password ===
+                        form.getValues().password
+                    }
+                  >
+                    Register
+                  </Button>
+                  {loading && (
+                    <span className="spinner-border spinner-border-sm"></span>
                   )}
                 </div>
               </div>
-            </form>
-          )}
+            </div>
+          </form>
         </Form>
       </div>
     </div>
