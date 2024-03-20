@@ -1,6 +1,6 @@
 package com.portfolio.fictionfood.authentication;
 
-import com.portfolio.fictionfood.authentication.token.RefreshTokenDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.fictionfood.authentication.token.Token;
 import com.portfolio.fictionfood.authentication.token.TokenRepository;
 import com.portfolio.fictionfood.authentication.token.TokenType;
@@ -9,7 +9,10 @@ import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
 import com.portfolio.fictionfood.user.User;
 import com.portfolio.fictionfood.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -79,23 +82,25 @@ public class AuthenticationService {
         tokenRepository.save(token);
     }
 
-    public AuthenticationResponse refreshToken(RefreshTokenDto refreshTokenDto) {
-        final String refreshToken = refreshTokenDto.getRefreshToken();
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) return;
+        final String refreshToken = authHeader.substring(7);
         final String username = jwtService.extractUsername(refreshToken);
         if (username != null) {
-            var user = this.repository.findByUsername(username)
-                    .orElseThrow();
+            var user = this.repository.findByUsername(username).orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
                 var accessToken = jwtService.generateToken(user);
-                return new AuthenticationResponse(accessToken, refreshToken);
-            } else {
-                var accessToken = jwtService.generateToken(user);
-                var newRefreshToken = jwtService.generateRefreshToken(user);
-                saveUserToken(user, newRefreshToken);
-                return new AuthenticationResponse(accessToken, newRefreshToken);
+                saveUserToken(user, refreshToken);
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
             }
-
         }
-        return null;
     }
 }

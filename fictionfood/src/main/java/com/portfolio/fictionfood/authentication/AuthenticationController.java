@@ -1,8 +1,9 @@
 package com.portfolio.fictionfood.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.portfolio.fictionfood.authentication.token.RefreshTokenDto;
 import com.portfolio.fictionfood.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -53,16 +53,16 @@ public class AuthenticationController {
     ) {
         try {
             return ResponseEntity.status(HttpStatus.OK).body(service.login(request));
-        }catch (BadCredentialsException e) {
+        } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenDto refreshTokenDTO)  {
+    public void refreshToken(HttpServletResponse response, HttpServletRequest request) throws IOException {
         logger.info("Issuing new refresh token");
-       return new ResponseEntity<>(service.refreshToken(refreshTokenDTO), HttpStatus.OK) ;
+        service.refreshToken(request, response);
     }
 }

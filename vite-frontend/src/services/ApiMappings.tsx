@@ -50,7 +50,9 @@ function changeAvatar() {
 }
 
 function refreshToken(refreshToken: string | null) {
-  return basicHttp.post("/auth/refresh-token", { refreshToken });
+  return basicHttp.post("/auth/refresh-token", null, {
+    headers: { Authorization: `Bearer ${refreshToken}` },
+  });
 }
 
 function getAllRecipes(page: number, amount: number) {

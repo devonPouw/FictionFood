@@ -82,6 +82,30 @@ public class RecipeService {
         return response;
     }
 
+    public Map<String, Object> getRecipesByUser(int page, int size, User currentUser) {
+        PageRequest paging = PageRequest.of(page, size, Sort.by("datePublished").descending());
+        Page<Recipe> pageRecipes = recipeRepository.findByIsPublished(true, paging);
+
+        List<RecipeListDto> recipeDtoList = pageRecipes.getContent().stream().map(recipe -> RecipeListDto.builder()
+                .id(recipe.getId())
+                .title(recipe.getTitle())
+                .summary(recipe.getSummary())
+                .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
+                .author(recipe.getAuthor().getNickname())
+                .datePublished(recipe.getDatePublished())
+                .rating(recipe.getRating())
+                .imageId(recipe.getImage().getId())
+                .build()).collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipes", recipeDtoList);
+        response.put("currentPage", pageRecipes.getNumber());
+        response.put("totalItems", pageRecipes.getTotalElements());
+        response.put("totalPages", pageRecipes.getTotalPages());
+
+        return response;
+    }
+
     public Recipe postRecipe(PostRecipeDto recipeDto, MultipartFile image, User currentUser) throws IOException {
 
         var recipe = new Recipe();
