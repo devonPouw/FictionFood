@@ -82,9 +82,9 @@ public class RecipeService {
         return response;
     }
 
-    public Map<String, Object> getRecipesByUser(int page, int size, User currentUser) {
+    public Map<String, Object> getAllUserRecipes(int page, int size, User currentUser) {
         PageRequest paging = PageRequest.of(page, size, Sort.by("datePublished").descending());
-        Page<Recipe> pageRecipes = recipeRepository.findByIsPublished(true, paging);
+        Page<Recipe> pageRecipes = recipeRepository.findByAuthor(currentUser, paging);
 
         List<RecipeListDto> recipeDtoList = pageRecipes.getContent().stream().map(recipe -> RecipeListDto.builder()
                 .id(recipe.getId())

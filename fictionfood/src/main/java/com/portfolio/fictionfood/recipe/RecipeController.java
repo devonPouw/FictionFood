@@ -72,11 +72,12 @@ public class RecipeController {
 
     @GetMapping("/me")
     public ResponseEntity<Map<String, Object>> getAllRecipesByUser(@RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size) {
-        logger.info("Fetching all published recipes, page: {}, size: {}", page, size);
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                                   @AuthenticationPrincipal User currentUser) {
+        logger.info("Fetching all recipes by user: {}, page: {}, size: {}",currentUser,  page, size);
 
         try {
-            Map<String, Object> response = recipeService.getAllPublishedRecipes(page, size);
+            Map<String, Object> response = recipeService.getAllUserRecipes(page, size, currentUser);
             logger.debug("Fetched {} recipes for page: {}", response.get("totalItems"), page);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {

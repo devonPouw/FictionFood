@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Page<Recipe> findByIsPublished(@NonNull Boolean isPublished, Pageable pageable);
+    Page<Recipe> findByAuthor(@NonNull User author, Pageable pageable);
 
     Long countByAuthorAndDatePublishedAfter(@NonNull User author, @NonNull LocalDateTime oneMonthAgo);
 }

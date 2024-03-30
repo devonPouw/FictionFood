@@ -10,6 +10,7 @@ export const backendApi = {
   changeAvatar,
   refreshToken,
   getAllRecipes,
+  getAllRecipesByUser,
   getRecipeById,
   postRecipe,
 };
@@ -58,6 +59,12 @@ function refreshToken(refreshToken: string | null) {
 function getAllRecipes(page: number, amount: number) {
   return http.get<IRecipeList>(
     "/recipes" + "?page=" + page + "&size=" + amount
+  );
+}
+
+function getAllRecipesByUser(page: number, amount: number) {
+  return http.get<IRecipeList>(
+    "/recipes/me" + "?page=" + page + "&size=" + amount
   );
 }
 

@@ -6,6 +6,7 @@ import Login from "@/pages/LoginPage";
 import Recipe from "@/pages/Recipe";
 import Register from "@/pages/RegisterPage";
 import ChangePassword from "@/components/auth/ChangePassword";
+import RecipeListByUser from "@/components/recipe/RecipeListByUser";
 
 export type AccountType = "MODERATOR" | "CHEF" | "VISITOR";
 
@@ -48,6 +49,11 @@ export const navList = [
     path: "/recipes",
     allowedAccountTypes: allAccountTypes,
     element: () => <RecipeList />,
+  },
+  {
+    path: "/recipes/me",
+    allowedAccountTypes: loggedInTypes,
+    element: () => <RecipeListByUser />,
   },
   {
     path: "/recipes/:id",
