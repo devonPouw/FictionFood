@@ -1,6 +1,7 @@
 package com.portfolio.fictionfood.authentication;
 
 import com.portfolio.fictionfood.user.UserRole;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ public class RegisterRequest {
     @Size(min = 3, max = 15)
     private String nickname;
     private String username;
+    @Email
     private String email;
     private String password;
     private UserRole role;

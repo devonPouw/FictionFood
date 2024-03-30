@@ -9,6 +9,7 @@ import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
 import com.portfolio.fictionfood.user.User;
 import com.portfolio.fictionfood.user.UserRepository;
+import com.portfolio.fictionfood.user.UserRole;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class AuthenticationService {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+        user.setRole(UserRole.CHEF);
         repository.save(user);
         imageService.uploadImage(avatar, user);
         user.setAvatar(imageRepository.findByUser(user).orElseThrow());
