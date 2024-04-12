@@ -10,12 +10,12 @@ import com.portfolio.fictionfood.ingredient.IngredientRepository;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredientDto;
 import com.portfolio.fictionfood.user.User;
-import com.portfolio.fictionfood.user.UserRepository;
 import com.portfolio.fictionfood.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,33 +58,13 @@ public class RecipeService {
                 .build();
     }
 
-    public Map<String, Object> getAllPublishedRecipes(int page, int size) {
+    public Map<String, Object> getAllRecipes(int page, int size, boolean viewOwnRecipes, String search, User currentUser) {
         PageRequest paging = PageRequest.of(page, size, Sort.by("datePublished").descending());
-        Page<Recipe> pageRecipes = recipeRepository.findByIsPublished(true, paging);
+        Specification<Recipe> specification =
+                RecipeSpecification.filterRecipe(currentUser, viewOwnRecipes)
+                        .and(RecipeSpecification.searchRecipe(search));
 
-        List<RecipeListDto> recipeDtoList = pageRecipes.getContent().stream().map(recipe -> RecipeListDto.builder()
-                .id(recipe.getId())
-                .title(recipe.getTitle())
-                .summary(recipe.getSummary())
-                .categories(recipe.getCategories().stream().map(Category::getName).collect(Collectors.toSet()))
-                .author(recipe.getAuthor().getNickname())
-                .datePublished(recipe.getDatePublished())
-                .rating(recipe.getRating())
-                .imageId(recipe.getImage().getId())
-                .build()).collect(Collectors.toList());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("recipes", recipeDtoList);
-        response.put("currentPage", pageRecipes.getNumber());
-        response.put("totalItems", pageRecipes.getTotalElements());
-        response.put("totalPages", pageRecipes.getTotalPages());
-
-        return response;
-    }
-
-    public Map<String, Object> getAllUserRecipes(int page, int size, User currentUser) {
-        PageRequest paging = PageRequest.of(page, size, Sort.by("datePublished").descending());
-        Page<Recipe> pageRecipes = recipeRepository.findByAuthor(currentUser, paging);
+        Page<Recipe> pageRecipes = recipeRepository.findAll(specification, paging);
 
         List<RecipeListDto> recipeDtoList = pageRecipes.getContent().stream().map(recipe -> RecipeListDto.builder()
                 .id(recipe.getId())
@@ -170,6 +150,6 @@ public class RecipeService {
             imageService.uploadImage(image, recipe);
             recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
         }
-       recipeRepository.save(recipe);
+        recipeRepository.save(recipe);
     }
 }

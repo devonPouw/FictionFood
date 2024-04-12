@@ -45,41 +45,33 @@ public class RecipeController {
             }
             logger.debug("Returning recipe details for id: {}", id);
             return ResponseEntity.status(HttpStatus.OK).body(recipeInfo);
-        }catch (UnauthorizedException e) {
-            logger.error("Error fetching recipe with id, user unauthorized: " + id, e);
+        } catch (UnauthorizedException e) {
+            logger.error("Error fetching recipe with id {}, user unauthorized", id, e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        catch (Exception e) {
-            logger.error("Error fetching recipe with id: " + id, e);
+        } catch (Exception e) {
+            logger.error("Error fetching recipe with id {}, ", id, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @GetMapping
     public ResponseEntity<Map<String, Object>> getAllRecipes(@RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size) {
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam boolean viewOwnRecipes,
+                                                             @RequestParam(required = false) String search,
+                                                             @AuthenticationPrincipal User currentUser) {
         logger.info("Fetching all published recipes, page: {}, size: {}", page, size);
 
         try {
-            Map<String, Object> response = recipeService.getAllPublishedRecipes(page, size);
+            if (search.isEmpty()) {
+                search = "";
+            }
+            Map<String, Object> response = recipeService.getAllRecipes(page, size, viewOwnRecipes, search, currentUser);
             logger.debug("Fetched {} recipes for page: {}", response.get("totalItems"), page);
             return ResponseEntity.status(HttpStatus.OK).body(response);
-        } catch (Exception e) {
-            logger.error("Error fetching recipes", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity<Map<String, Object>> getAllRecipesByUser(@RequestParam(defaultValue = "0") int page,
-                                                             @RequestParam(defaultValue = "10") int size,
-                                                                   @AuthenticationPrincipal User currentUser) {
-        logger.info("Fetching all recipes by user: {}, page: {}, size: {}",currentUser,  page, size);
-
-        try {
-            Map<String, Object> response = recipeService.getAllUserRecipes(page, size, currentUser);
-            logger.debug("Fetched {} recipes for page: {}", response.get("totalItems"), page);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (UnauthorizedException e) {
+            logger.error("Error fetching recipes, user unauthorized ", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
             logger.error("Error fetching recipes", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -88,8 +80,8 @@ public class RecipeController {
 
     @PostMapping
     public ResponseEntity<String> postRecipe(@RequestPart("recipe") String recipeJson,
-                                        @RequestPart("image") MultipartFile image,
-                                        @AuthenticationPrincipal User currentUser) {
+                                             @RequestPart("image") MultipartFile image,
+                                             @AuthenticationPrincipal User currentUser) {
 
         logger.info("Attempting to post a new recipe by user: {}", currentUser.getUsername());
 
