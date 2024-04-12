@@ -29,13 +29,22 @@ export default function RecipeList() {
   const [recipeList, setRecipeList] = useState<IRecipeListState>(
     initialRecipeListState
   );
-  const amountOfRecipes = 1;
+  const [amountOfRecipes, setAmountOfRecipes] = useState(6);
+  const [search, setSearch] = useState("");
+  const [viewOwnRecipes, setViewOwnRecipes] = useState(false);
 
-  const fetchRecipes = async (page: number): Promise<void> => {
+  const fetchRecipes = async (
+    page: number,
+    amountOfRecipes: number,
+    viewOwnRecipes: boolean,
+    search: string
+  ): Promise<void> => {
     try {
       const response = await backendApi.getAllRecipes(
         page - 1,
-        amountOfRecipes
+        amountOfRecipes,
+        viewOwnRecipes,
+        search
       );
       if (response && response.data) {
         setRecipeList({
@@ -49,7 +58,12 @@ export default function RecipeList() {
   };
 
   useEffect(() => {
-    fetchRecipes(recipeList.currentPage);
+    fetchRecipes(
+      recipeList.currentPage,
+      amountOfRecipes,
+      viewOwnRecipes,
+      search
+    );
   }, []);
 
   const renderPageNumbers = (
@@ -58,12 +72,11 @@ export default function RecipeList() {
     onPageChange: (page: number) => void
   ): JSX.Element[] => {
     const pageNumbers: JSX.Element[] = [];
-    const visiblePages = 3; // Adjust how many pages you want to show before and after the current page
+    const visiblePages = 3;
 
     let startPage: number, endPage: number;
 
     if (totalPages <= visiblePages) {
-      // Less than visiblePages+1 total pages so show all
       startPage = 1;
       endPage = totalPages;
     } else {
@@ -152,6 +165,36 @@ export default function RecipeList() {
   return (
     <div>
       <NavBar />
+      <div className="flex items-center justify-center bg-red-500">
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button
+          onClick={() => {
+            fetchRecipes(1, amountOfRecipes, viewOwnRecipes, search);
+          }}
+        >
+          Search
+        </button>
+        <label>
+          <input
+            type="checkbox"
+            checked={viewOwnRecipes}
+            onChange={(e) => setViewOwnRecipes(e.target.checked)}
+          />
+          View Own Recipes
+        </label>
+        <label>
+          <select onChange={(e) => setAmountOfRecipes(Number(e.target.value))}>
+            <option value={5}>6</option>
+            <option value={10}>12</option>
+            <option value={20}>24</option>
+            <option value={50}>48</option>
+          </select>
+        </label>
+      </div>
       <RecipePreview recipeList={recipeList} />
       <Pagination>
         <PaginationContent>
@@ -161,7 +204,12 @@ export default function RecipeList() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  fetchRecipes(recipeList.currentPage - 1);
+                  fetchRecipes(
+                    recipeList.currentPage - 1,
+                    amountOfRecipes,
+                    viewOwnRecipes,
+                    search
+                  );
                 }}
               />
             </PaginationItem>
@@ -169,7 +217,8 @@ export default function RecipeList() {
           {renderPageNumbers(
             recipeList.currentPage,
             recipeList.totalPages,
-            fetchRecipes
+            (page) =>
+              fetchRecipes(page, amountOfRecipes, viewOwnRecipes, search)
           ).map((pageNumber) => pageNumber)}
           {recipeList.currentPage < recipeList.totalPages && (
             <PaginationItem>
@@ -177,7 +226,12 @@ export default function RecipeList() {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  fetchRecipes(recipeList.currentPage + 1);
+                  fetchRecipes(
+                    recipeList.currentPage + 1,
+                    amountOfRecipes,
+                    viewOwnRecipes,
+                    search
+                  );
                 }}
               />
             </PaginationItem>

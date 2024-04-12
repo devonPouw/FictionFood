@@ -69,10 +69,16 @@ const Login: React.FC = () => {
                 <DropdownMenuSubTrigger>My recipes</DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem onClick={() => navigate("/recipes/me")}>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        navigate("/recipes", {
+                          state: { viewOwnRecipes: true },
+                        })
+                      }
+                    >
                       Finished
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/recipes/me")}>
+                    <DropdownMenuItem onClick={() => navigate("/recipes")}>
                       Editing...
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
