@@ -9,13 +9,12 @@ import lombok.extern.jackson.Jacksonized;
 import java.util.List;
 
 @Jacksonized
-@Entity
+@Entity(name = "CATEGORIES")
 @Getter
 @Setter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Table(name = "CATEGORIES")
 public class Category {
 
     @Id
@@ -27,4 +26,8 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     @JsonBackReference
     private List<Recipe> recipes;
+
+    public Category(String name) {
+        this.name = name;
+    }
 }

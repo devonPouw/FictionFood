@@ -10,13 +10,12 @@ import java.util.List;
 
 
 @Jacksonized
-@Entity
+@Entity(name = "INGREDIENTS")
 @Getter
 @Setter
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Table(name = "INGREDIENTS")
 public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -25,4 +24,8 @@ public class Ingredient {
     @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<RecipeIngredient> recipeIngredients;
+
+    public Ingredient(String name) {
+        this.name = name;
+    }
 }

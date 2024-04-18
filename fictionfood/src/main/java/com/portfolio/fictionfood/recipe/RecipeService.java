@@ -2,7 +2,7 @@ package com.portfolio.fictionfood.recipe;
 
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.category.CategoryRepository;
-import com.portfolio.fictionfood.exception.UnauthorizedException;
+import com.portfolio.fictionfood.exception.ForbiddenException;
 import com.portfolio.fictionfood.image.ImageRepository;
 import com.portfolio.fictionfood.image.ImageService;
 import com.portfolio.fictionfood.ingredient.Ingredient;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,13 +35,13 @@ public class RecipeService {
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
 
-    public RecipeInfoDto getRecipeByIdAndUser(long id, User currentUser) throws UnauthorizedException {
+    public RecipeInfoDto getRecipeByIdAndUser(long id, User currentUser) throws ForbiddenException {
         var recipe = recipeRepository.findById(id).orElseThrow();
-        if (currentUser == null || currentUser.getRole().equals(UserRole.CHEF))
+        if (currentUser == null || currentUser.getRole().equals(UserRole.CHEF)) {
             if (!recipe.getAuthor().equals(currentUser) && !recipe.getIsPublished()) {
-                throw new UnauthorizedException("User is not authorized to access this recipe"); //has to be forbidden
+                throw new ForbiddenException("User is not allowed to access this recipe");
             }
-
+        }
         return RecipeInfoDto.builder()
                 .id(recipe.getId())
                 .title(recipe.getTitle())
@@ -85,7 +86,7 @@ public class RecipeService {
 
         return response;
     }
-
+    @Transactional
     public Recipe postRecipe(PostRecipeDto recipeDto, MultipartFile image, User currentUser) throws IOException {
 
         var recipe = new Recipe();
@@ -100,8 +101,7 @@ public class RecipeService {
         recipe.setCategories(new HashSet<>(Arrays.stream(recipeDto.getCategories())
                 .map(categoryDto -> categoryRepository.findByNameIgnoringCase(categoryDto)
                         .orElseGet(() -> {
-                            Category newCategory = new Category();
-                            newCategory.setName(categoryDto);
+                            Category newCategory = new Category(categoryDto);
                             return categoryRepository.save(newCategory);
                         }))
                 .collect(Collectors.toSet())));
@@ -112,10 +112,8 @@ public class RecipeService {
 
                     Ingredient ingredient = ingredientRepository.findByNameIgnoringCase(recipeIngredientDto.getIngredient())
                             .orElseGet(() -> {
-                                Ingredient newIngredient = new Ingredient();
-                                newIngredient.setName(recipeIngredientDto.getIngredient());
-                                ingredientRepository.save(newIngredient);
-                                return newIngredient;
+                                Ingredient newIngredient = new Ingredient(recipeIngredientDto.getIngredient());
+                                return ingredientRepository.save(newIngredient);
                             });
 
                     recipeIngredient.setIngredient(ingredient);
