@@ -1,7 +1,7 @@
 FROM gradle:8.7.0-jdk21-alpine AS builder
 WORKDIR /app
 COPY . .
-COPY . gradle.properties
+COPY gradle.properties gradle.properties
 RUN gradle build
 
 FROM eclipse-temurin:21-jre-alpine

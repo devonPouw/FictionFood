@@ -56,7 +56,7 @@ export default function Recipe() {
             </div>
             <div className="p-2 flex justify-center">
               <img
-                className="w-1/2 h-fit object-contain rounded-lg"
+                className="w-1/2 h-full object-contain rounded-lg overflow-hidden"
                 src={
                   import.meta.env.VITE_HTTPS_BACKEND +
                   `/images/${recipe.imageId}`
@@ -64,31 +64,39 @@ export default function Recipe() {
                 alt={recipe?.title || "Recipe Image"}
               ></img>
             </div>
-            <div className="p-3">{recipe.summary}</div>
-
-            <div className="px-3">
-              {recipe.recipeIngredients.map((recipeIngredient, index) => (
-                <div key={index}>
-                  {recipeIngredient.quantity} {recipeIngredient.ingredient}{" "}
-                  {recipeIngredient.unit}
+            <div className="flex items-center justify-center">
+              <div className="w-3/4">
+                <div className="p-3 text-lg">{recipe.summary}</div>
+                <label className="text-sm">
+                  Ingredients:
+                  <ul className="px-3 text-base">
+                    {recipe.recipeIngredients.map((recipeIngredient, index) => (
+                      <li key={index}>
+                        {recipeIngredient.quantity}{" "}
+                        {recipeIngredient.ingredient} {recipeIngredient.unit}
+                      </li>
+                    ))}
+                  </ul>
+                </label>
+                <div className="p-3 text-lg">{recipe.content}</div>
+                <div className="flex items-center justify-end p-1">
+                  <div className="mr-2">{recipe.author}</div>
+                  <Avatar>
+                    <AvatarImage
+                      src={
+                        import.meta.env.VITE_HTTPS_BACKEND +
+                        `/images/${recipe.authorImageId}`
+                      }
+                      alt="avatar"
+                    />
+                    <AvatarFallback>
+                      {recipe.author.substring(0, 1)}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
-              ))}
+                <div>{recipe.datePublished}</div>
+              </div>
             </div>
-            <div className="p-3">{recipe.content}</div>
-            <div className="flex items-center justify-end p-1">
-              <div className="mr-2">{recipe.author}</div>
-              <Avatar>
-                <AvatarImage
-                  src={
-                    import.meta.env.VITE_HTTPS_BACKEND +
-                    `/images/${recipe.authorImageId}`
-                  }
-                  alt="avatar"
-                />
-                <AvatarFallback>{recipe.author.substring(0, 1)}</AvatarFallback>
-              </Avatar>
-            </div>
-            <div>{recipe.datePublished}</div>
           </div>
         ) : (
           <div className=" h-5/6 flex items-center justify-center space-x-4 m-5">

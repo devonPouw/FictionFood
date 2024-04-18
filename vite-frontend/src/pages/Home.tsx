@@ -3,6 +3,7 @@ import NavBar from "@/components/header/NavBar";
 import RecipePreview from "@/components/recipe/RecipePreview";
 import { useToast } from "@/components/ui/use-toast";
 import { backendApi } from "@/services/ApiMappings";
+import { useAuth } from "@/services/auth/useAuth";
 import { IRecipeList } from "@/types/Recipe";
 import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ export default function Home() {
     initialRecipeListState
   );
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const fetchRecipePreview = async () => {
     try {
@@ -37,7 +39,7 @@ export default function Home() {
   };
   useEffect(() => {
     fetchRecipePreview();
-  }, []);
+  }, [user]);
 
   return (
     <div>
