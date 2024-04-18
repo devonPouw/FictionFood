@@ -5,7 +5,7 @@ import React, {
   ReactNode,
   useCallback,
 } from "react";
-import { AccountType, accountType } from "@/services/Paths";
+import { AccountType, accountType } from "@/types/User";
 import { IUser } from "@/types/User";
 import { parseJwt } from "../ApiMappings";
 
@@ -40,10 +40,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return;
       }
       const decodedToken = parseJwt(token);
-      if (decodedToken && decodedToken.exp > Date.now() / 1000) {
+      if (localStorage.getItem("refreshToken")) {
         setUser(decodedToken as IUser);
       } else {
-        userLogout(); // Ensure this doesn't lead to a state where logout could get called before the component is fully mounted
+        userLogout();
       }
     },
     [userLogout]
@@ -54,6 +54,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (storedToken) {
       loginUserWithToken(storedToken);
     }
+    console.log("AuthProvider - user updated:", user);
   }, [loginUserWithToken]);
 
   const userIsAuthenticated = useCallback((): boolean => !!user, [user]);
