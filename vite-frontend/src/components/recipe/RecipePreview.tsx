@@ -1,30 +1,28 @@
-import { IRecipeList } from "@/types/Recipe";
-import { NavigateFunction, useNavigate } from "react-router-dom";
-interface RecipePreviewProps {
-  recipeList: IRecipeList;
-}
+import { IRecipePreviewProps } from "@/types/Recipe";
+import RecipePreviewSkeleton from "./RecipePreviewSkeleton";
+import { useGoToRecipe } from "../../services/recipe/RecipeHelper";
 
-const RecipePreview: React.FC<RecipePreviewProps> = ({ recipeList }) => {
+const RecipePreview: React.FC<IRecipePreviewProps> = ({ recipeList }) => {
   const { recipes } = recipeList;
-
-  const navigate: NavigateFunction = useNavigate();
-
-  const goToRecipe = (id: number | null) => {
-    if (id !== null) {
-      navigate(`/recipes/${id}`);
-    } else {
-      console.error("Attempted to navigate to a recipe with a null id");
-    }
-  };
+  const goToRecipe = useGoToRecipe();
 
   return !recipes ? (
-    <div>loading...</div>
+    <div className="w-full h-auto flex justify-center dark:text-white">
+      <div className="w-3/4 grid py-4 gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
+        <RecipePreviewSkeleton />
+        <RecipePreviewSkeleton />
+        <RecipePreviewSkeleton />
+        <RecipePreviewSkeleton />
+        <RecipePreviewSkeleton />
+        <RecipePreviewSkeleton />
+      </div>
+    </div>
   ) : (
     <div className="w-full h-auto flex justify-center dark:text-white">
       <div className="w-3/4 grid py-4 gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center">
         {recipes.map((recipe) => (
           <div
-            className="h-auto w-full px-4 py-4 rounded-xl border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30"
+            className="h-auto w-full px-4 py-4 rounded-xl border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:border lg:bg-gray-100 lg:dark:bg-zinc-800/30 hover:-translate-y-2 ease-in-out duration-300 cursor-pointer"
             key={recipe.id}
             onClick={() => goToRecipe(recipe.id)}
           >
