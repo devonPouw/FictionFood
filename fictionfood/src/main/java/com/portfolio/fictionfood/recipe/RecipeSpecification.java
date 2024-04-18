@@ -1,6 +1,7 @@
 package com.portfolio.fictionfood.recipe;
 
 import com.portfolio.fictionfood.user.User;
+import com.portfolio.fictionfood.user.UserRole;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -11,15 +12,22 @@ public class RecipeSpecification {
             query.distinct(true);
 
             if (currentUser == null) {
-                return criteriaBuilder.conjunction();
-            } else if (viewOwnRecipes) {
-                return criteriaBuilder.equal(root.get("author"), currentUser);
-            } else {
-                return criteriaBuilder.or(
-                        criteriaBuilder.equal(root.get("author"), currentUser),
-                        criteriaBuilder.notEqual(root.get("author"), currentUser)
-                );
+                return criteriaBuilder.equal(root.get("isPublished"), true);
             }
+            if (viewOwnRecipes) {
+                return criteriaBuilder.equal(root.get("author"), currentUser);
+            }
+            else if (currentUser.getRole().equals(UserRole.CHEF)) {
+                return criteriaBuilder.and( criteriaBuilder.equal(root.get("isPublished"), true),
+                        criteriaBuilder.notEqual(root.get("author"), currentUser));
+            }
+            else {
+                return criteriaBuilder.or(criteriaBuilder.equal(root.get(("author")), currentUser),
+                        criteriaBuilder.notEqual(root.get("author"), currentUser));
+            }
+
+
+
         };
     }
 
