@@ -12,27 +12,38 @@ import {
   PaginationPrevious,
 } from "../ui/pagination";
 import { backendApi } from "@/services/ApiMappings";
-import { IRecipeList } from "@/types/Recipe";
-
-interface IRecipeListState extends IRecipeList {
-  currentPage: number;
-}
+import { IRecipeListState, initialRecipeListState } from "@/types/Recipe";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
+import { BsFillInfoSquareFill } from "react-icons/bs";
+import { AxiosError } from "axios";
+import { useToast } from "../ui/use-toast";
 
 export default function RecipeList() {
-  const initialRecipeListState: IRecipeListState = {
-    recipes: [],
-    currentPage: 1,
-    totalItems: 0,
-    totalPages: 0,
-  };
-
   const [recipeList, setRecipeList] = useState<IRecipeListState>(
     initialRecipeListState
   );
-  const [amountOfRecipes, setAmountOfRecipes] = useState(6);
+  const [amountOfRecipes, setAmountOfRecipes] = useState("6");
   const [search, setSearch] = useState("");
   const [viewOwnRecipes, setViewOwnRecipes] = useState(false);
-
+  const { toast } = useToast();
   const fetchRecipes = async (
     page: number,
     amountOfRecipes: number,
@@ -53,18 +64,26 @@ export default function RecipeList() {
         });
       }
     } catch (error) {
-      console.error(error);
+      if (
+        error instanceof AxiosError &&
+        error.response &&
+        error.response.data
+      ) {
+        toast({
+          description: error.response.data.message,
+        });
+      }
     }
   };
 
   useEffect(() => {
     fetchRecipes(
       recipeList.currentPage,
-      amountOfRecipes,
+      Number(amountOfRecipes),
       viewOwnRecipes,
       search
     );
-  }, []);
+  }, [viewOwnRecipes, amountOfRecipes]);
 
   const renderPageNumbers = (
     currentPage: number,
@@ -162,41 +181,95 @@ export default function RecipeList() {
     return pageNumbers;
   };
 
+  const handleSearchOnEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      fetchRecipes(1, Number(amountOfRecipes), viewOwnRecipes, search);
+    }
+  };
+
   return (
     <div>
       <NavBar />
-      <div className="flex items-center justify-center bg-red-500">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <button
-          onClick={() => {
-            fetchRecipes(1, amountOfRecipes, viewOwnRecipes, search);
-          }}
-        >
-          Search
-        </button>
-        <label>
-          <input
-            type="checkbox"
-            checked={viewOwnRecipes}
-            onChange={(e) => setViewOwnRecipes(e.target.checked)}
-          />
-          View Own Recipes
-        </label>
-        <label>
-          <select onChange={(e) => setAmountOfRecipes(Number(e.target.value))}>
-            <option value={5}>6</option>
-            <option value={10}>12</option>
-            <option value={20}>24</option>
-            <option value={50}>48</option>
-          </select>
-        </label>
+      <div className="w-full h-52 flex justify-center">
+        <div className="w-1/4 flex flex-col bg-gradient-to-b from-gray-300 to-gray-200 m-5 border rounded-lg dark:from-gray-700 dark:to-gray-800">
+          <div className="flex m-2 items-center">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <BsFillInfoSquareFill className="mr-2 h-5 w-5" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Searching for recipes can be done by title, author or
+                    ingredient
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <Input
+              placeholder="Search for recipes"
+              type="text"
+              autoCorrect="false"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={(e) => handleSearchOnEnter(e)}
+            />
+            <Button
+              className="ml-1"
+              onClick={() => {
+                fetchRecipes(
+                  1,
+                  Number(amountOfRecipes),
+                  viewOwnRecipes,
+                  search
+                );
+              }}
+            >
+              Search
+            </Button>
+          </div>
+          <div className="flex items-center justify-between m-2">
+            <div className="flex items-center space-x-1">
+              <Checkbox
+                id="viewOwnRecipes"
+                checked={viewOwnRecipes}
+                onCheckedChange={() =>
+                  setViewOwnRecipes(viewOwnRecipes ? false : true)
+                }
+              />
+              <Label htmlFor="viewOwnRecipes">View Own Recipes</Label>
+            </div>
+            <Label>
+              <Select
+                defaultValue="6"
+                onValueChange={(value) => setAmountOfRecipes(value)}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Amount of recipes" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Amount of recipes</SelectLabel>
+                    <SelectItem value="6">6</SelectItem>
+                    <SelectItem value="12">12</SelectItem>
+                    <SelectItem value="24">24</SelectItem>
+                    <SelectItem value="48">48</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Label>
+          </div>
+        </div>
       </div>
-      <RecipePreview recipeList={recipeList} />
-      <Pagination>
+      {recipeList.totalItems !== 0 ? (
+        <RecipePreview recipeList={recipeList} />
+      ) : (
+        <div className="w-full h-screen flex items-center justify-center">
+          <div className="h-1/2">No recipes found that include "{search}"</div>
+        </div>
+      )}
+      <Pagination className="p-4">
         <PaginationContent>
           {recipeList.currentPage > 1 && (
             <PaginationItem>
@@ -206,7 +279,7 @@ export default function RecipeList() {
                   e.preventDefault();
                   fetchRecipes(
                     recipeList.currentPage - 1,
-                    amountOfRecipes,
+                    Number(amountOfRecipes),
                     viewOwnRecipes,
                     search
                   );
@@ -218,7 +291,12 @@ export default function RecipeList() {
             recipeList.currentPage,
             recipeList.totalPages,
             (page) =>
-              fetchRecipes(page, amountOfRecipes, viewOwnRecipes, search)
+              fetchRecipes(
+                page,
+                Number(amountOfRecipes),
+                viewOwnRecipes,
+                search
+              )
           ).map((pageNumber) => pageNumber)}
           {recipeList.currentPage < recipeList.totalPages && (
             <PaginationItem>
@@ -228,7 +306,7 @@ export default function RecipeList() {
                   e.preventDefault();
                   fetchRecipes(
                     recipeList.currentPage + 1,
-                    amountOfRecipes,
+                    Number(amountOfRecipes),
                     viewOwnRecipes,
                     search
                   );
