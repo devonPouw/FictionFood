@@ -220,7 +220,7 @@ const AddRecipe: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col">
       <NavBar />
-      <div className="container">
+      <div className="container mt-5">
         <div className="container">
           <Form {...form}>
             <form
@@ -242,6 +242,7 @@ const AddRecipe: React.FC = () => {
               />
               {form.getValues().categories.map((category, index) => (
                 <Button
+                  className="mr-3 hover:bg-red-500 hover:text-white"
                   key={index}
                   type="button"
                   onClick={() => {
@@ -302,25 +303,28 @@ const AddRecipe: React.FC = () => {
                 )}
               />
               <FormItem>
-                {form
-                  .getValues()
-                  .recipeIngredients.map((recipeIngredient, index) => (
-                    <Button
-                      type="button"
-                      key={index}
-                      onClick={() => removeIngredientAtIndex(index)}
-                    >
-                      {recipeIngredient.ingredient}, {recipeIngredient.quantity}{" "}
-                      {recipeIngredient.unit}
-                    </Button>
-                  ))}
+                <div className="flex flex-col w-1/3">
+                  {form
+                    .getValues()
+                    .recipeIngredients.map((recipeIngredient, index) => (
+                      <Button
+                        className="mr-3 hover:bg-red-500 hover:text-white"
+                        type="button"
+                        key={index}
+                        onClick={() => removeIngredientAtIndex(index)}
+                      >
+                        {recipeIngredient.ingredient},{" "}
+                        {recipeIngredient.quantity} {recipeIngredient.unit}
+                      </Button>
+                    ))}
+                </div>
               </FormItem>
               <FormField
                 control={form.control}
                 name="recipeIngredients"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Add an ingredient</FormLabel>
+                    <FormLabel>Ingredient</FormLabel>
                     <FormControl>
                       <div>
                         <Input
@@ -333,21 +337,24 @@ const AddRecipe: React.FC = () => {
                             })
                           }
                         />
-                        <div className="flex items-center justify-around">
-                          <Input
-                            className="w-1/3 min-w-[280px]"
-                            type="number"
-                            placeholder="Quantity"
-                            value={newIngredient.quantity}
-                            onChange={(e) =>
-                              setNewIngredient({
-                                ...newIngredient,
-                                quantity: e.target.value,
-                              })
-                            }
-                          />
-                          <FormItem className="flex flex-col">
-                            <FormLabel className="text-lg">Unit</FormLabel>
+                        <div className="flex items-center justify-between">
+                          <FormItem>
+                            <FormLabel>Quantity</FormLabel>
+                            <Input
+                              className="w-1/3 min-w-[280px]"
+                              type="number"
+                              placeholder="Quantity"
+                              value={newIngredient.quantity}
+                              onChange={(e) =>
+                                setNewIngredient({
+                                  ...newIngredient,
+                                  quantity: e.target.value,
+                                })
+                              }
+                            />
+                          </FormItem>
+                          <FormItem>
+                            <FormLabel>Unit</FormLabel>
                             <Select
                               onValueChange={(value) =>
                                 setNewIngredient({
@@ -356,7 +363,7 @@ const AddRecipe: React.FC = () => {
                                 })
                               }
                             >
-                              <SelectTrigger className="w-full min-w-[280px]">
+                              <SelectTrigger className="w-full min-w-[280px] border rounded-lg h-10">
                                 <SelectValue placeholder="Select the matching unit" />
                               </SelectTrigger>
                               <SelectContent>
@@ -371,7 +378,11 @@ const AddRecipe: React.FC = () => {
                               </SelectContent>
                             </Select>
                           </FormItem>
-                          <Button type="button" onClick={() => addIngredient()}>
+                          <Button
+                            className="mt-5"
+                            type="button"
+                            onClick={() => addIngredient()}
+                          >
                             Add Ingredient
                           </Button>
                         </div>
@@ -380,56 +391,78 @@ const AddRecipe: React.FC = () => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="isPublished"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Submit as published</FormLabel>
-                    <FormControl>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormControl>
-                    <FormMessage autoCorrect="false" />
-                  </FormItem>
-                )}
-              />
-              <div
-                {...getRootProps()}
-                style={{
-                  border: "2px dashed #ddd",
-                  padding: "20px",
-                  textAlign: "center",
-                }}
-              >
-                <input {...getInputProps()} />
-                {isDragActive ? (
-                  <p>Drop the image here...</p>
+              <div className="flex w-full">
+                <div
+                  className="w-1/2 h-80 flex items-center justify-center"
+                  {...getRootProps()}
+                  style={{
+                    border: "2px dashed #ddd",
+                    padding: "20px",
+                    textAlign: "center",
+                  }}
+                >
+                  <input {...getInputProps()} />
+                  {isDragActive ? (
+                    <p>Drop the image here...</p>
+                  ) : (
+                    <p>
+                      Drag 'n' drop an image here, or click to select an image
+                    </p>
+                  )}
+                </div>
+                {imageSelected ? (
+                  imageUrl && (
+                    <div className="w-1/2 flex flex-col items-center justify-center">
+                      <div>
+                        <span>Current selected image</span>
+                      </div>
+                      <img
+                        className="w-1/2 aspect-square object-contain"
+                        src={imageUrl}
+                        alt=""
+                      />
+                      <div>
+                        <span>Allowed image size: </span>
+                        <span
+                          className={`${
+                            form.getValues().image.size > MAX_FILE_SIZE
+                              ? "text-red-500"
+                              : ""
+                          }`}
+                        >
+                          {(form.getValues().image.size / 1000000)
+                            .toString()
+                            .slice(0, 4)}
+                          MB
+                        </span>{" "}
+                        <span> / {MAX_FILE_SIZE / 1000000} MB</span>
+                      </div>
+                    </div>
+                  )
                 ) : (
-                  <p>
-                    Drag 'n' drop an image here, or click to select an image
-                  </p>
+                  <div></div>
                 )}
               </div>
-              {imageSelected ? (
-                imageUrl && (
-                  <div className="w-1/2">
-                    <img
-                      className="w-1/2 aspect-square object-contain"
-                      src={imageUrl}
-                      alt=""
-                    />
-                  </div>
-                )
-              ) : (
-                <div></div>
-              )}
               <div className="w-full flex justify-center">
-                <div>
+                <div className="w-1/4 flex items-center justify-between">
+                  <FormField
+                    control={form.control}
+                    name="isPublished"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col items-center m-2">
+                        <FormLabel>Submit as published</FormLabel>
+                        <FormControl>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormControl>
+                        <FormMessage autoCorrect="false" />
+                      </FormItem>
+                    )}
+                  />
                   <div>
                     <Button
                       className="w-32 md:24 border-2"
