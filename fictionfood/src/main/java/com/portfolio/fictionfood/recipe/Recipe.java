@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.portfolio.fictionfood.category.Category;
 import com.portfolio.fictionfood.image.RecipeImage;
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredient;
+import com.portfolio.fictionfood.review.Review;
 import com.portfolio.fictionfood.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -35,10 +35,9 @@ public class Recipe {
     //    @NonNull
     @Column(columnDefinition = "varchar")
     private String content;
-
-    private BigDecimal rating;
-
-    //    private Set<User> amountOfReviews;
+    private Double rating;
+    @OneToMany
+    private Set<Review> reviews;
     @OneToOne
     @JsonManagedReference
     private RecipeImage image;

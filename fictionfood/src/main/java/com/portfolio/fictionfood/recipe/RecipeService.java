@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,6 +45,7 @@ public class RecipeService {
                 .id(recipe.getId())
                 .title(recipe.getTitle())
                 .rating(recipe.getRating())
+                .reviews(new HashSet<>(recipe.getReviews()))
                 .summary(recipe.getSummary())
                 .content(recipe.getContent())
                 .recipeIngredients(recipe.getRecipeIngredients().stream().map(recipeIngredient -> new RecipeIngredientDto(
@@ -86,6 +86,7 @@ public class RecipeService {
 
         return response;
     }
+
     @Transactional
     public Recipe postRecipe(PostRecipeDto recipeDto, MultipartFile image, User currentUser) throws IOException {
 
@@ -95,9 +96,8 @@ public class RecipeService {
         recipe.setContent(recipeDto.getContent());
         recipe.setIsPublished(recipeDto.getIsPublished());
         recipe.setAuthor(currentUser);
-        recipe.setRating(BigDecimal.valueOf(0.0));
+        recipe.setRating(0.0);
         recipe.setDatePublished(LocalDateTime.now());
-//                  recipe.setAmountOfReviews(0);
         recipe.setCategories(new HashSet<>(Arrays.stream(recipeDto.getCategories())
                 .map(categoryDto -> categoryRepository.findByNameIgnoringCase(categoryDto)
                         .orElseGet(() -> {

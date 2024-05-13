@@ -1,12 +1,12 @@
 package com.portfolio.fictionfood.recipe;
 
 import com.portfolio.fictionfood.recipeingredient.RecipeIngredientDto;
+import com.portfolio.fictionfood.review.Review;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 @Data
@@ -16,7 +16,8 @@ import java.util.Set;
 public class RecipeInfoDto {
     private Long id;
     private String title;
-    private BigDecimal rating;
+    private Double rating;
+    private Set<Review> reviews;
     private String summary;
     private String content;
     private Set<RecipeIngredientDto> recipeIngredients;

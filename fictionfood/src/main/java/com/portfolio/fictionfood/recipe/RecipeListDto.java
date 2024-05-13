@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -21,5 +20,5 @@ public class RecipeListDto {
     private Set<String> categories;
     private Long imageId;
     private LocalDateTime datePublished;
-    private BigDecimal rating;
+    private Double rating;
 }
