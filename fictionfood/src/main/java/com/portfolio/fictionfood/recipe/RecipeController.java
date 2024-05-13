@@ -37,21 +37,9 @@ public class RecipeController {
     @GetMapping("/{id}")
     public ResponseEntity<RecipeInfoDto> getRecipeById(@PathVariable("id") Long id, @AuthenticationPrincipal User currentUser) {
         logger.info("Request received to fetch recipe with id: {}", id);
-        try {
-            RecipeInfoDto recipeInfo = recipeService.getRecipeByIdAndUser(id, currentUser);
-            if (recipeInfo == null) {
-                logger.warn("No recipe found with id: {}", id);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            logger.debug("Returning recipe details for id: {}", id);
-            return ResponseEntity.status(HttpStatus.OK).body(recipeInfo);
-        } catch (UnauthorizedException e) {
-            logger.error("Error fetching recipe with id {}, user unauthorized", id, e);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        } catch (Exception e) {
-            logger.error("Error fetching recipe with id {}, ", id, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        RecipeInfoDto recipeInfo = recipeService.getRecipeByIdAndUser(id, currentUser);
+        logger.debug("Returning recipe details for id: {}", id);
+        return ResponseEntity.status(HttpStatus.OK).body(recipeInfo);
     }
 
     @GetMapping
