@@ -12,21 +12,21 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final UserService userService;
     private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
+    private final UserService userService;
+
     @GetMapping("/profile")
-    public ResponseEntity<UserDto> getProfile(@AuthenticationPrincipal User currentUser){
+    public ResponseEntity<UserDto> getProfile(@AuthenticationPrincipal User currentUser) {
         try {
             UserDto userDto = userService.getProfile(currentUser);
             return ResponseEntity.ok().body(userDto);
-        }catch (UnauthorizedException u) {
+        } catch (UnauthorizedException u) {
             logger.error("User {} was unauthorized fetching profile", currentUser.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (RuntimeException b) {
@@ -45,24 +45,18 @@ public class UserController {
         try {
             userService.changePassword(request, currentUser);
             return ResponseEntity.status(HttpStatus.OK).body("Password successfully changed!");
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
     @PatchMapping("/profile/avatar")
-    public ResponseEntity<?> changeAvatar(@RequestPart("image") MultipartFile image, @AuthenticationPrincipal User currentUser){
-        try{
+    public ResponseEntity<?> changeAvatar(@RequestPart("image") MultipartFile image, @AuthenticationPrincipal User currentUser) {
+        try {
             userService.changeAvatar(image, currentUser);
             return ResponseEntity.status(HttpStatus.OK).body("Avatar successfully changed!");
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        catch(UnauthorizedException u){
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-        catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
