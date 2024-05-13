@@ -1,9 +1,8 @@
 package com.portfolio.fictionfood.review;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.portfolio.fictionfood.recipe.Recipe;
+import com.portfolio.fictionfood.user.User;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
@@ -16,17 +15,16 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 public class Review {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.SEQUENCE)
-        private Long id;
-
-        private String title;
-
-        private String content;
-
-        private Double rating;
-
-        private Long recipeId;
-
-        private Long userId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    private String title;
+    private String content;
+    private Double rating;
+    @ManyToOne
+    @JoinColumn(name = "recipe_id")
+    private Recipe recipe;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 }
