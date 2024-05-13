@@ -73,7 +73,7 @@ public class AuthenticationService {
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    void saveUserToken(User user, String jwtToken) {
         tokenRepository.findByUser(user).ifPresent(tokenRepository::delete);
         var token = Token.builder()
                 .user(user)
