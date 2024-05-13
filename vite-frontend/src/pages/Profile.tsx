@@ -1,5 +1,6 @@
 import Footer from "@/components/footer/Footer";
 import NavBar from "@/components/header/NavBar";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { backendApi } from "@/services/ApiMappings";
@@ -35,17 +36,29 @@ const Profile = () => {
       {!profile ? (
         <Skeleton />
       ) : (
-        <div className="container">
-          <img
-            className="w-1/2 h-full object-contain rounded-lg aspect-square"
-            src={
-              import.meta.env.VITE_HTTPS_BACKEND + `/images/${profile.avatarId}`
-            }
-            alt={profile?.nickname || "Your Avatar"}
-          ></img>
-          <div>{profile.nickname}</div>
-          <div>{profile.email}</div>
-          <div>{profile.role.toLowerCase()}</div>
+        <div className="container flex">
+          <div className="mx-5">
+            <img
+              className="w-1/2 h-auto object-contain rounded-lg"
+              src={
+                import.meta.env.VITE_HTTPS_BACKEND +
+                `/images/${profile.avatarId}`
+              }
+              alt={profile?.nickname || "Your Avatar"}
+            />
+            <div className="font-semibold">
+              Nickname: <span className="font-normal">{profile.nickname}</span>
+            </div>
+            <div className="">
+              Email: <span>{profile.email}</span>
+            </div>
+            <div className="">
+              Role: <span> {profile.role.toLowerCase()}</span>
+            </div>
+          </div>
+          <div className="mt-2">
+            <Button>Edit profile</Button>
+          </div>
         </div>
       )}
       <Footer />
