@@ -3,7 +3,7 @@ import NavBar from "@/components/header/NavBar";
 import { backendApi } from "@/services/ApiMappings";
 import { IRecipeData } from "@/types/Recipe";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/components/ui/use-toast";
@@ -13,6 +13,8 @@ export default function Recipe() {
   const [recipe, setRecipe] = useState<IRecipeData | null>(null);
   const { id } = useParams<{ id: string }>();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchRecipe = async () => {
     try {
@@ -22,11 +24,11 @@ export default function Recipe() {
       if (
         error instanceof AxiosError &&
         error.response &&
-        error.response.data
+        error.response.data &&
+        error.response.status === 404 // Assuming 404 for not found
       ) {
-        toast({
-          description: error.response.data.message,
-        });
+        toast({ description: "Recipe not found" });
+        navigate(location.pathname.replace(`/${id}`, ""));
       }
     }
   };
