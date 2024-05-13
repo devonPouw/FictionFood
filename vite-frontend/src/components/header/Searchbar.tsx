@@ -40,7 +40,6 @@ const Searchbar: React.FC = () => {
       );
       if (response && response.data) {
         setRecipeList(response.data);
-        console.log(response.data);
       }
     } catch (error) {
       if (

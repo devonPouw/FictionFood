@@ -36,7 +36,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     (token: string) => {
       // Check if the token is truthy before proceeding
       if (!token) {
-        console.log("Token is undefined or null, aborting login.");
         return;
       }
       const decodedToken = parseJwt(token);
@@ -54,7 +53,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (storedToken) {
       loginUserWithToken(storedToken);
     }
-    console.log("AuthProvider - user updated:", user);
   }, [loginUserWithToken]);
 
   const userIsAuthenticated = useCallback((): boolean => !!user, [user]);

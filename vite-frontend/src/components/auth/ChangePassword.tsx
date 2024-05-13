@@ -36,7 +36,7 @@ const ChangePassword = () => {
       toast({
         description: response.data,
       });
-      navigate("/");
+      navigate("/profile");
     } catch (error) {
       if (
         error instanceof AxiosError &&

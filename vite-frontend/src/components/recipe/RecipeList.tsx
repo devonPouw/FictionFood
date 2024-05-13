@@ -44,6 +44,7 @@ export default function RecipeList() {
   const [search, setSearch] = useState("");
   const [viewOwnRecipes, setViewOwnRecipes] = useState(false);
   const { toast } = useToast();
+
   const fetchRecipes = async (
     page: number,
     amountOfRecipes: number,
@@ -266,7 +267,26 @@ export default function RecipeList() {
         <RecipePreview recipeList={recipeList} />
       ) : (
         <div className="w-full h-screen flex items-center justify-center">
-          <div className="h-1/2">No recipes found that include "{search}"</div>
+          <div className="h-1/4">
+            {viewOwnRecipes ? (
+              <div className="flex flex-col">
+                <h1 className="text-3xl m-3">
+                  You posted no recipes yet, click below to get started!
+                </h1>
+                <Button
+                  onClick={() => {
+                    window.location.href = "/recipes/new";
+                  }}
+                >
+                  Create a new recipe
+                </Button>
+              </div>
+            ) : (
+              <h1 className="text-3xl">
+                No recipes found that include "{search}"
+              </h1>
+            )}
+          </div>
         </div>
       )}
       <Pagination className="p-4">

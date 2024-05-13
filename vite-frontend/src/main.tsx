@@ -12,7 +12,7 @@ import ChangePassword from "./components/auth/ChangePassword.tsx";
 import Profile from "./pages/Profile.tsx";
 import Login from "./pages/LoginPage.tsx";
 
-const loggedInTypes = ["USER", "MODERATOR"];
+const loggedInTypes = ["CHEF", "MODERATOR"];
 
 const router = createBrowserRouter([
   {
