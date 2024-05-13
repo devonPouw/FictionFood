@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
@@ -73,7 +72,6 @@ public class Seeder implements CommandLineRunner {
         imageService.uploadImage(image[5], user);
         user.setAvatar(imageRepository.findByUser(user).orElseThrow());
         userRepository.save(user);
-
 
         Category category = new Category();
         category.setName("Disney");
@@ -213,7 +211,8 @@ public class Seeder implements CommandLineRunner {
         recipe.setContent("Still don't believe it? Make it, you donut!");
         recipe.setIsPublished(true);
         recipe.setAuthor(user);
-        recipe.setRating(BigDecimal.valueOf(5.0));
+        recipe.setRating(5.0);
+        recipe.setReviews(null);
         recipe.setDatePublished(LocalDateTime.now());
         recipe.setCategories(Set.of(category, category1));
         recipe.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
@@ -224,7 +223,8 @@ public class Seeder implements CommandLineRunner {
         recipe1.setContent("Do I need to say more?");
         recipe1.setIsPublished(true);
         recipe1.setAuthor(user);
-        recipe1.setRating(BigDecimal.valueOf(4.2));
+        recipe1.setRating(5.0);
+        recipe1.setReviews(null);
         recipe1.setDatePublished(LocalDateTime.now().minusSeconds(550));
         recipe1.setCategories(Set.of(category2));
         recipe1.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
@@ -235,7 +235,8 @@ public class Seeder implements CommandLineRunner {
         recipe2.setContent("With some really nice gravy");
         recipe2.setIsPublished(true);
         recipe2.setAuthor(user);
-        recipe2.setRating(BigDecimal.valueOf(5.0));
+        recipe2.setRating(5.0);
+        recipe2.setReviews(null);
         recipe2.setDatePublished(LocalDateTime.now().minusSeconds(210));
         recipe2.setCategories(Set.of(category, category3));
         recipe2.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient1));
@@ -246,7 +247,8 @@ public class Seeder implements CommandLineRunner {
         recipe3.setContent("A delicious pasta dish with rich tomato sauce and Parmesan cheese.");
         recipe3.setIsPublished(true);
         recipe3.setAuthor(user);
-        recipe3.setRating(BigDecimal.valueOf(4.8));
+        recipe3.setRating(5.0);
+        recipe3.setReviews(null);
         recipe3.setDatePublished(LocalDateTime.now().minusSeconds(300));
         recipe3.setCategories(Set.of(category, category4, category5));
         recipe3.setRecipeIngredients(Set.of(recipeIngredient6, recipeIngredient7, recipeIngredient8, recipeIngredient9, recipeIngredient10));
@@ -257,12 +259,12 @@ public class Seeder implements CommandLineRunner {
         recipe4.setContent("A simple and delicious pizza with tomato, mozzarella, and basil.");
         recipe4.setIsPublished(true);
         recipe4.setAuthor(user);
-        recipe4.setRating(BigDecimal.valueOf(4.9));
+        recipe4.setRating(5.0);
+        recipe4.setReviews(null);
         recipe4.setDatePublished(LocalDateTime.now().minusSeconds(180));
         recipe4.setCategories(Set.of(category, category4));
         recipe4.setRecipeIngredients(Set.of(recipeIngredient, recipeIngredient6, recipeIngredient7, recipeIngredient9, recipeIngredient10));
         recipe4.setImage(imageRepository.findByRecipe(recipe4).orElseThrow());
-
 
         recipeRepository.saveAll(Set.of(recipe, recipe1, recipe2, recipe3, recipe4));
     }
