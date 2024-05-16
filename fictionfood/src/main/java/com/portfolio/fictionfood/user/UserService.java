@@ -43,4 +43,12 @@ public class UserService {
         currentUser.setAvatar(imageRepository.findByUser(currentUser).orElseThrow());
         userRepository.save(currentUser);
     }
+    public void changeEmail(ChangeEmailRequest request, User currentUser) {
+        currentUser.setEmail(request.getNewEmail());
+        userRepository.save(currentUser);
+    }
+    public void changeNickname(ChangeNicknameRequest request, User currentUser) {
+        currentUser.setNickname(request.getNewNickname());
+        userRepository.save(currentUser);
+    }
 }

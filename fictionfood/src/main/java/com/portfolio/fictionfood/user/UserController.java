@@ -20,6 +20,7 @@ public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(RecipeController.class);
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @GetMapping("/profile")
     public ResponseEntity<UserDto> getProfile(@AuthenticationPrincipal User currentUser) {
@@ -57,6 +58,33 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.OK).body("Avatar successfully changed!");
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PatchMapping("/profile/email")
+    public ResponseEntity<?> changeEmail(@RequestBody ChangeEmailRequest request, @AuthenticationPrincipal User currentUser) {
+        try {
+            if (currentUser.getEmail().equals(request.getCurrentEmail())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New email is the same as the current one");
+            }
+            userService.changeEmail(request, currentUser);
+            return ResponseEntity.status(HttpStatus.OK).body("Email successfully changed!");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    @PatchMapping("/profile/nickname")
+    public ResponseEntity<?> changeNickname(@RequestBody ChangeNicknameRequest request, @AuthenticationPrincipal User currentUser) {
+        try {
+            if (userRepository.existsByNickname(request.getNewNickname())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nickname already in use");
+            }
+            else if(currentUser.getNickname().equals(request.getNewNickname())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New nickname is the same as the current one");
+            }
+            userService.changeNickname(request, currentUser);
+            return ResponseEntity.status(HttpStatus.OK).body("Nickname successfully changed!");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
