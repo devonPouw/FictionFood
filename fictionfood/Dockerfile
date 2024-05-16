@@ -1,12 +1,20 @@
-FROM gradle:8.7.0-jdk21-alpine AS builder
+FROM gradle:8.7.0-jdk21-alpine AS build
 WORKDIR /app
-COPY . .
-COPY gradle.properties gradle.properties
-RUN gradle build
+
+COPY build.gradle.kts settings.gradle.kts ./
+COPY gradle ./gradle
+COPY src ./src
+
+RUN gradle build --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
-ENV APP_HOME=/app/
-COPY --from=builder ${APP_HOME}/build/libs/*.jar app.jar
-RUN mkdir src
+WORKDIR /app
+ENV APP_HOME=/app
+
+COPY --from=build ${APP_HOME}/build/libs/*.jar app.jar
+
 COPY src/*.jpg src/
-ENTRYPOINT ["java","-jar","/app.jar"]
+
+EXPOSE 8080
+
+ENTRYPOINT ["java","-jar","app.jar"]

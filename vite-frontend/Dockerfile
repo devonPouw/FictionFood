@@ -1,17 +1,8 @@
-FROM node:21-alpine AS builder
+FROM node:21-alpine 
 WORKDIR /app 
 COPY package.json package-lock.json* ./
-RUN npm install 
+RUN npm install
 COPY . .
 
-ARG VITE_HTTPS_BACKEND
-ENV VITE_HTTPS_BACKEND=$VITE_HTTPS_BACKEND
-
-RUN npm run build 
-
-FROM nginx:1.24-alpine
-ENV VITE_HTTPS_BACKEND=$VITE_HTTPS_BACKEND 
-
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 5173
+CMD ["npm", "run", "dev"]
