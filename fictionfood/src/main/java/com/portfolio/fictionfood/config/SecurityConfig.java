@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,8 +21,6 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,7 +38,8 @@ import static org.springframework.http.HttpMethod.*;
 public class SecurityConfig {
 
     private static final String[] allUsers = new String[]{CHEF.name(), MODERATOR.name()};
-
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
     private final LogoutHandler logoutHandler;
@@ -61,7 +59,16 @@ public class SecurityConfig {
                 .headerValue(XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
         ));
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(Customizer.withDefaults());
+        http.cors(cors -> cors
+                .configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+                    config.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
+                    return config;
+                })
+        );
         http.authorizeHttpRequests((auth) -> {
             matchAll.apply(auth).apply("/api/auth/**").permitAll();
             match.apply(auth).apply("/api/users/profile/*", PATCH).hasAnyRole(allUsers);
@@ -83,17 +90,5 @@ public class SecurityConfig {
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
         );
         return http.build();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(allowedOrigins);
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PATCH"));
-        configuration.addAllowedHeader("*");
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
