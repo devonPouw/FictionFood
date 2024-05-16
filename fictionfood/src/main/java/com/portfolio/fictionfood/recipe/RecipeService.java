@@ -148,6 +148,16 @@ public class RecipeService {
             imageService.uploadImage(image, recipe);
             recipe.setImage(imageRepository.findByRecipe(recipe).orElseThrow());
         }
+        if (!recipe.getCategories().stream()
+                .map(Category::getName).collect(Collectors.toSet()).equals(new HashSet<>(updatedRecipe.getCategories()))){
+            recipe.setCategories(new HashSet<>(updatedRecipe.getCategories().stream()
+                    .map(categoryDto -> categoryRepository.findByNameIgnoringCase(categoryDto)
+                            .orElseGet(() -> {
+                                Category newCategory = new Category(categoryDto);
+                                return categoryRepository.save(newCategory);
+                            }))
+                    .collect(Collectors.toSet())));
+        }
         recipeRepository.save(recipe);
     }
 }
