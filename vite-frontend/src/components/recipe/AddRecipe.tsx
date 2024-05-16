@@ -324,7 +324,7 @@ const AddRecipe: React.FC = () => {
                 name="recipeIngredients"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Ingredient</FormLabel>
+                    <FormLabel>Ingredients</FormLabel>
                     <FormControl>
                       <div>
                         <Input

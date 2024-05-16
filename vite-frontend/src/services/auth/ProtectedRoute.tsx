@@ -14,7 +14,19 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   const { getAccountType } = useAuth();
   const accountType = getAccountType();
   const isAllowed = allowedAccountTypes.includes(accountType);
-  if (!isAllowed) return <div>Loading authentication data...</div>;
+  if (!isAllowed) {
+    const timeout = 5000;
+    setTimeout(() => {
+      if (!isAllowed) {
+        <Navigate to="/" />;
+      }
+    }, timeout);
+    return !timeout ? (
+      <div>Loading authentication data...</div>
+    ) : (
+      <Navigate to="/" />
+    );
+  }
 
   return isAllowed ? children : <Navigate to="/" />;
 };
