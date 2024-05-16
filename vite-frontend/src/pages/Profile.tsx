@@ -50,6 +50,7 @@ const Profile = () => {
         response = await backendApi.changeNickname(nicknameRequest);
         setNickname("");
         setEditNickname(false);
+        fetchUserProfile();
       } else if (param === "email") {
         const emailRequest: IChangeEmailData = {
           newEmail: value,
@@ -58,6 +59,7 @@ const Profile = () => {
         response = await backendApi.changeEmail(emailRequest);
         setEmail("");
         setEditEmail(false);
+        fetchUserProfile();
       } else return;
       toast({
         description: response.data,
@@ -76,7 +78,7 @@ const Profile = () => {
   };
   useEffect(() => {
     fetchUserProfile();
-  }, [editEmail, editNickname]);
+  }, []);
   return (
     <div>
       <NavBar />
@@ -111,7 +113,7 @@ const Profile = () => {
                 <div></div>
               )}
               <Button onClick={() => setEditNickname(!editNickname)}>
-                <FaRegEdit />
+                {!editNickname ? <FaRegEdit /> : "Cancel"}
               </Button>{" "}
             </div>
             <div className="font-semibold flex justify-around">
@@ -136,11 +138,6 @@ const Profile = () => {
             <div className="">
               Role: <span> {profile.role.toLowerCase()}</span>
             </div>
-          </div>
-          <div className="mt-2">
-            <Button>
-              <FaRegEdit />
-            </Button>
           </div>
         </div>
       )}
