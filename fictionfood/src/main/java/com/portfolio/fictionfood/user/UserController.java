@@ -63,7 +63,7 @@ public class UserController {
     @PatchMapping("/profile/email")
     public ResponseEntity<?> changeEmail(@RequestBody ChangeEmailRequest request, @AuthenticationPrincipal User currentUser) {
         try {
-            if (currentUser.getEmail().equals(request.getCurrentEmail())) {
+            if (currentUser.getEmail().equals(request.getNewEmail())) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New email is the same as the current one");
             }
             userService.changeEmail(request, currentUser);

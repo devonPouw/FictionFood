@@ -1,3 +1,4 @@
+import { IChangeEmailData, IChangeNicknameData } from "@/types/User";
 import { IRecipeData, IRecipeList } from "@/types/Recipe";
 import axios from "axios";
 
@@ -7,6 +8,8 @@ export const backendApi = {
   logout,
   getProfile,
   changePassword,
+  changeEmail,
+  changeNickname,
   changeAvatar,
   refreshToken,
   getAllRecipes,
@@ -43,6 +46,12 @@ function changePassword(
     newPassword,
     confirmationPassword,
   });
+}
+function changeEmail(emailRequest: IChangeEmailData) {
+  return http.patch("/user/profile/email", emailRequest);
+}
+function changeNickname(nicknameRequest: IChangeNicknameData) {
+  return http.patch("/user/profile/nickname", nicknameRequest);
 }
 
 function changeAvatar() {

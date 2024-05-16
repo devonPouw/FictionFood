@@ -29,6 +29,14 @@ export interface IChangePasswordData {
   newPassword: string;
   confirmationPassword: string;
 }
+export interface IChangeEmailData {
+  newEmail: string;
+  currentEmail: string;
+}
+export interface IChangeNicknameData {
+  newNickname: string;
+  currentNickname: string;
+}
 export interface IProfileData {
   nickname: string;
   email: string;
