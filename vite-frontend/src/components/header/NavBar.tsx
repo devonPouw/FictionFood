@@ -38,7 +38,6 @@ export default function NavBar() {
       <div className="container flex h-14 items-center font-bold">
         <Login />
       </div>
-      <div className="container"></div>
     </div>
   );
 }

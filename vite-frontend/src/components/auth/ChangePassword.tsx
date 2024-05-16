@@ -74,7 +74,7 @@ const ChangePassword = () => {
   });
 
   return (
-    <div className="w-screen h-screen flex flex-col">
+    <div className="w-full h-screen flex flex-col">
       <div className="container h-1/3">
         <div className="flex h-1/2 items-center justify-center text-4xl">
           <Link to={"/"}>

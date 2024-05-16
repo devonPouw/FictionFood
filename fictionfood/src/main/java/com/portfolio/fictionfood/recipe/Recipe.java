@@ -43,7 +43,7 @@ public class Recipe {
     private RecipeImage image;
     //    @NonNull
     @ManyToOne
-    @JoinColumn(nullable = true) //set to false later
+    @JoinColumn() //set nullable to false later
     @JsonManagedReference
     private User author;
 
