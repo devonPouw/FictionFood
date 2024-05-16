@@ -1,1 +1,3 @@
-vite-frontend/.env
+compose.yaml
+db-data
+nginx.conf

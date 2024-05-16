@@ -1,0 +1,39 @@
+[
+  {
+    "title": "Pasta",
+    "summary": "This pasta is really good",
+    "content": "Still don't believe it? Make it, you donut!",
+    "isPublished": true,
+    "rating": 5.0,
+    "categories": ["Disney", "Pixar"],
+    "ingredients": [
+      { "name": "Flour", "quantity": 500, "unit": "gram" },
+      { "name": "Eggs", "quantity": 2, "unit": "piece" }
+    ]
+  },
+  {
+    "title": "Steak",
+    "summary": "Not for vegans",
+    "content": "With some really nice gravy",
+    "rating": 5.0,
+    "categories": ["Disney", "Star Wars"],
+    "ingredients": [
+      { "name": "Steak", "quantity": 150, "unit": "gram" },
+      { "name": "Gravy", "quantity": 100, "unit": "millilitre" }
+    ]
+  },
+  {
+    "title": "Spaghetti Bolognese",
+    "summary": "Classic Italian dish",
+    "content": "A delicious pasta dish with rich tomato sauce and Parmesan cheese.",
+    "rating": 4.8,
+    "categories": ["Disney", "Italian", "Comfort Food"],
+    "ingredients": [
+      { "name": "Tomato Sauce", "quantity": 400, "unit": "gram" },
+      { "name": "Parmesan Cheese", "quantity": 50, "unit": "gram" },
+      { "name": "Spaghetti", "quantity": 300, "unit": "gram" },
+      { "name": "Olive Oil", "quantity": 2, "unit": "tablespoon" },
+      { "name": "Mozzarella", "quantity": 150, "unit": "gram" }
+    ]
+  }
+]

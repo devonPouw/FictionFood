@@ -1,7 +1,5 @@
 HELP.md
 .gradle
-db-data
-compose.yaml
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
